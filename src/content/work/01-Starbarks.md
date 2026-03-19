@@ -1,7 +1,6 @@
 ---
 company: "星巴克"
 role: "咖啡师"
-date: "2026-01-01"
 dateStart: "Nov 2025"
 dateEnd: "Feb 2026"
 ---

@@ -30,15 +30,15 @@ export const PROJECTS: Metadata = {
 
 export const SOCIALS: Socials = [
   { 
-    NAME: "twitter-x",
-    HREF: "https://twitter.com/markhorn_dev",
+    NAME: "微信公众号",
+    HREF: "https://mp.weixin.qq.com/s/rdMLq23OIPLe8GWRoDrKrA",
   },
   { 
-    NAME: "github",
-    HREF: "https://github.com/markhorn-dev"
+    NAME: "播客",
+    HREF: "https://www.xiaoyuzhoufm.com/podcast/6714883c0acd28ca2202f337"
   },
   { 
-    NAME: "linkedin",
-    HREF: "https://www.linkedin.com/in/markhorn-dev",
+    NAME: "网站",
+    HREF: "https://www.biomuselab.com/",
   }
 ];

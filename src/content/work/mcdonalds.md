@@ -1,8 +1,8 @@
 ---
-company: "McDonalds"
-role: "French Fryer"
-dateStart: "03/16/2018"
-dateEnd: "07/01/2019"
+company: "MCN传媒公司"
+role: "主播"
+dateStart: "Jun 2025"
+dateEnd: "Jun 2025"
 ---
 
-Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iure illo neque tempora, voluptatem est quaerat voluptas praesentium ipsa dolorem dignissimos nulla ratione distinctio quae maiores eligendi nostrum? Quibusdam, debitis voluptatum.
+以身迈入，成为主播，看主播是怎么被塑造出来的，看到MCN传媒主公司的人和环境，同时也看到了很多美女帅哥们

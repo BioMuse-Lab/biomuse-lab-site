@@ -2,12 +2,12 @@
 title: "如何具备思辨能力：不要长期关注任何人，并且提笔写作"
 description: "问：每日阅读真的可以提高写作能力么？答：不能。你最好直接开始写，写一切你觉得可以写的事物"
 date: "2025-11-25"
-drawer: "/images/星空之下.jpg"
+drawer: "/images/starry-sky.jpg"
 ---
 
 ![一名没有形状的女子](/images/banner.png)
 大家好，我是**无暇顾及**，欢迎来这里玩耍。
-<img src="/images/星空之下.jpg" width="60%" style="display: block; margin: 0 auto;" />
+<img src="/images/starry-sky.jpg" width="60%" style="display: block; margin: 0 auto;" />
 我的建议是不要关注任何人，恩，对，包括无暇顾及我的这个号，所以想取关就取关吧。
 当然我也知道我的建议你不会听，所以我只是建议。
 
@@ -51,7 +51,7 @@ drawer: "/images/星空之下.jpg"
 这对于p人来说着实是个好方法，计划这个东西p人不知道为何物，做了计划第二天也是完全不按照计划来，但是他们具有极大的灵活调整度，能够随时调整，随时说走就走，随之既来之则安之。
 
 于是每日只记录，而后进行日总结/周总结/月总结，我就是看了这本书之后，如今已经开始养成每日记录的习惯已经有将近400多天了。所以，也行动起来吧，大家！！
-<img src="/images/柳比歇夫.jpg" width="60%" style="display: block; margin: 0 auto;" />
+<img src="/images/lyubishchev.jpg" width="60%" style="display: block; margin: 0 auto;" />
 
 > **问：每日阅读真的可以提高写作能力么？**
 

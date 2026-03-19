@@ -1,8 +1,8 @@
 ---
-company: "Facebook"
-role: "Intern"
-dateStart: "07/01/2019"
-dateEnd: "12/31/2019"
+company: "星巴克"
+role: "咖啡师"
+dateStart: "Nov 2025"
+dateEnd: "Feb 2027"
 ---
 
-Iure illo neque tempora, voluptatem est quaerat voluptas praesentium ipsa dolorem dignissimos nulla ratione distinctio quae maiores eligendi nostrum? Quibusdam, debitis voluptatum, lorem ipsum dolor. Sit amet consectetur adipisicing elit.
+在上海星巴克门店摇咖啡/做星冰乐/打扫卫生/看人来人往

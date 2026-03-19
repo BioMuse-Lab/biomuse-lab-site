@@ -1,7 +1,7 @@
 ---
 company: "百力格生物公司"
 role: "科研销售"
-dateStart: "01/07/2024"
+dateStart: "July 2024"
 dateEnd: "至今"
 ---
 

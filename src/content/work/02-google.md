@@ -1,7 +1,6 @@
 ---
 company: "华东理工大学"
 role: "研究生"
-date: "2026-02-01"
 dateStart: "Sep 2021"
 dateEnd: "July 2024"
 ---

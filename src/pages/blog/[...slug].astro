@@ -44,6 +44,41 @@ const { Content } = await post.render();
     </div>
     <article class="animate">
       <Content />
-    </article>
+
+      <hr class="my-8 border-stone-200 dark:border-stone-800" />
+      
+      <section class="animate space-y-4">
+        <h5 class="font-semibold text-black dark:text-white">
+          让我们彼此触达
+        </h5>
+        <div class="prose dark:prose-invert">
+          <p>
+            万物穿身而过，就在此处。如果你想知道更多，或者想和我聊聊任何想法，或者单纯打个招呼，欢迎通过以下方式触达。（点击下方可跳转）
+          </p>
+        </div>
+        <ul class="flex flex-wrap gap-2 text-sm">
+          {SOCIALS.map((SOCIAL) => (
+            <li class="flex gap-x-2 text-nowrap">
+              <a 
+                href={SOCIAL.HREF} 
+                target="_blank" 
+                class="text-current underline underline-offset-2 decoration-black/15 dark:decoration-white/30 hover:text-black hover:dark:text-white transition-colors duration-300"
+              >
+                {SOCIAL.NAME}
+              </a>
+              <span class="text-stone-300 dark:text-stone-700">/</span>
+            </li>
+          ))}
+          <li class="line-clamp-1">
+            <a 
+              href={`mailto:${SITE.EMAIL}`} 
+              class="text-current underline underline-offset-2 decoration-black/15 dark:decoration-white/30 hover:text-black hover:dark:text-white transition-colors duration-300"
+            >
+              {SITE.EMAIL}
+            </a>
+          </li>
+        </ul>
+      </section>
+      </article>
   </Container>
 </PageLayout>

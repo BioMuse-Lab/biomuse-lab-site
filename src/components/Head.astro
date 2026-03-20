@@ -186,3 +186,20 @@ function toggleTheme(dark) {
   document.addEventListener("astro:after-swap", () => init());
   preloadTheme();
 </script>
+<style is:inline>
+  :root {
+    --font-serif: ui-serif, Georgia, "Lora", "Noto Serif SC", serif;
+  }
+
+  html, body, p, li, a, span, div {
+    font-family: var(--font-serif) !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.02em !important;
+    -webkit-font-smoothing: antialiased; /* 针对 iOS 的平滑处理 */
+  }
+
+  /* 针对你最在意的职业履历列表 */
+  ul, ol {
+    font-family: var(--font-serif) !important;
+  }
+</style>

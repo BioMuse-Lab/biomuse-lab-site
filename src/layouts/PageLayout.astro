@@ -3,6 +3,8 @@ import Head from "@components/Head.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { SITE } from "@consts";
+// 【核心：ViewTransitions 必须放在这个 --- 区域内】
+import { ViewTransitions } from 'astro:transitions';
 
 type Props = {
   title: string;
@@ -16,7 +18,7 @@ const { title, description } = Astro.props;
 <html lang="en">
   <head>
     <Head title={`${title} | ${SITE.NAME}`} description={description} />
-    import { ViewTransitions } from 'astro:transitions';
+    {/* 这里调用 ViewTransitions，确保全站跳转不断音 */}
     <ViewTransitions />
   </head>
   <body>
@@ -26,8 +28,8 @@ const { title, description } = Astro.props;
     </main>
 
     <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer;">
-     <div id="music-disk" style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-       <div id="music-icon" style="display: flex; align-items: center; justify-content: center; color: white;">
+      <div id="music-disk" style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+        <div id="music-icon" style="display: flex; align-items: center; justify-content: center; color: white;">
           <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <circle cx="12" cy="12" r="4"></circle>
@@ -35,67 +37,60 @@ const { title, description } = Astro.props;
           </svg>
         </div>
       </div>
+      {/* transition:persist 是跨页面不断音的核心黑科技 */}
       <audio id="bg-music" src="/audio/Opus55.mp3" loop transition:persist></audio>
     </div>
 
-    <style>
-  /* 旋转动画：播放时触发 */
-  @keyframes rotate-disk {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  /* 呼吸动画：静止时提示用户可以点击 */
-  @keyframes breathe {
-    0% { opacity: 0.4; transform: scale(0.95); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-    100% { opacity: 0.4; transform: scale(0.95); }
-  }
-
-  /* 容器基础样式 */
-  #music-disk {
-    transition: all 0.3s ease;
-    animation: breathe 3s ease-in-out infinite; /* 默认开启呼吸灯 */
-  }
-
-  /* 鼠标悬停效果：增强交互感 */
-  #music-container:hover #music-disk {
-    background: #222;
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
-  }
-
-  /* 核心逻辑：当拥有 rotating 类时，停止呼吸，开始旋转 */
-  .rotating {
-    animation: rotate-disk 4s linear infinite !important; /* !important 确保覆盖呼吸动画 */
-    opacity: 1 !important;
-  }
-</style>
+    <style is:global>
+      @keyframes rotate-disk {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes breathe {
+        0% { opacity: 0.4; transform: scale(0.95); }
+        50% { opacity: 0.8; transform: scale(1.05); }
+        100% { opacity: 0.4; transform: scale(0.95); }
+      }
+      #music-disk {
+        transition: all 0.3s ease;
+        animation: breathe 3s ease-in-out infinite;
+      }
+      .rotating {
+        animation: rotate-disk 4s linear infinite !important;
+        opacity: 1 !important;
+      }
+    </style>
 
     <Footer />
 
     <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
+      // 定义初始化函数，确保跳转后逻辑依然可用
+      function setupMusic() {
         const container = document.getElementById('music-container');
         const disk = document.getElementById('music-disk');
         const audio = document.getElementById('bg-music');
-        const icon = document.getElementById('music-icon');
-        let isPlaying = false;
+        
+        if (!container || !audio) return;
 
-        if (container && audio) {
-          container.addEventListener('click', () => {
-            if (isPlaying) {
-              audio.pause();
-              disk.classList.remove('rotating');
-              if (icon) icon.style.opacity = '0.5';
-            } else {
-              audio.play().catch(e => console.log("Playback blocked"));
-              disk.classList.add('rotating');
-              if (icon) icon.style.opacity = '1';
-            }
-            isPlaying = !isPlaying;
-          });
+        // 如果跳转回来发现音乐还在播，自动让图标继续转
+        if (!audio.paused) {
+          disk.classList.add('rotating');
         }
-      });
+
+        // 绑定点击事件
+        container.onclick = () => {
+          if (audio.paused) {
+            audio.play().catch(e => console.log("Playback blocked"));
+            disk.classList.add('rotating');
+          } else {
+            audio.pause();
+            disk.classList.remove('rotating');
+          }
+        };
+      }
+
+      // 关键：在 Astro 页面加载和跳转完成后执行初始化
+      document.addEventListener('astro:page-load', setupMusic);
     </script>
   </body>
 </html>

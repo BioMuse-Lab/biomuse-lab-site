@@ -25,22 +25,19 @@ const { title, description } = Astro.props;
       <slot />
     </main>
 
-    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 60px; height: 60px;">
+    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px;">
       
       <div id="music-wrapper" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
         
-        <div id="music-core" style="position: absolute; width: 12px; height: 12px; background: #1a1a1a; border-radius: 50%; z-index: 3; transition: all 0.4s ease;"></div>
+        <div id="music-core" style="position: absolute; width: 14px; height: 14px; background: #000; border-radius: 50%; z-index: 3; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(0,0,0,0.2); filter: blur(0.3px);"></div>
 
-        <div id="music-galaxy" style="position: absolute; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; z-index: 2;">
+        <div id="music-galaxy" style="position: absolute; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; z-index: 2;">
           
-          <div id="music-planet" style="position: absolute; width: 5px; height: 5px; background: #000; border-radius: 50%; top: -2px; opacity: 0; transition: opacity 0.3s ease;"></div>
+          <div id="music-planet" style="position: absolute; width: 8px; height: 8px; background: #000; border-radius: 50%; top: -4px; opacity: 0; transition: opacity 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>
 
-          <div id="music-orbits" style="color: #000; opacity: 0.15; transform: scale(0.9); transition: all 0.3s ease;">
-            <svg viewBox="0 0 24 24" width="50" height="50" stroke="currentColor" stroke-width="1.0" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <circle cx="12" cy="12" r="6.5"></circle>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
+          <div id="music-orbits" style="color: #000; opacity: 0.2; transform: scale(0.9); transition: all 0.3s ease;">
+            <svg viewBox="0 0 24 24" width="54" height="54" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle> <circle cx="12" cy="12" r="6.5"></circle> <circle cx="12" cy="12" r="3"></circle>   </svg>
           </div>
         </div>
       </div>
@@ -55,46 +52,43 @@ const { title, description } = Astro.props;
         to { transform: rotate(360deg); }
       }
 
-      /* 动画 B：深层呼吸脉动（缩放 + 透明度复合） */
+      /* 动画 B：深层呼吸脉动（让边缘若隐若现） */
       @keyframes deep-pulse {
-        0%, 100% { transform: scale(0.88); opacity: 0.1; }
-        50% { transform: scale(1.05); opacity: 0.45; }
+        0%, 100% { transform: scale(0.9); opacity: 0.15; }
+        50% { transform: scale(1.05); opacity: 0.5; }
       }
 
-      /* 初始静止状态：轨道执行淡淡的呼吸，像在深海中闪烁 */
+      /* 初始状态：轨道执行淡淡的呼吸 */
       #music-orbits {
         animation: deep-pulse 4s ease-in-out infinite;
       }
 
       /* 【播放激活状态】 */
-      
-      /* 1. 轨道层：开启旋转 + 增强呼吸感 */
       .playing #music-galaxy {
-        animation: galaxy-rotation 5s linear infinite;
+        animation: galaxy-rotation 6s linear infinite;
       }
 
       .playing #music-orbits {
-        animation: deep-pulse 2.5s ease-in-out infinite !important; /* 播放时呼吸加快 */
+        animation: deep-pulse 3s ease-in-out infinite !important;
         opacity: 0.8 !important;
         color: #000 !important;
       }
 
-      /* 2. 星球浮现 */
+      /* 公转星球浮现 */
       .playing #music-planet {
-        opacity: 0.85 !important;
+        opacity: 1 !important;
       }
 
-      /* 3. 核心微调 */
+      /* 核心在播放时产生微弱的“发光”共振感 */
       .playing #music-core {
-        background: #000;
         transform: scale(1.1);
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 18px rgba(0,0,0,0.25);
       }
 
-      /* 鼠标悬停交互 */
+      /* 鼠标悬停交互：核心变大且光晕扩散 */
       #music-container:hover #music-core {
-        transform: scale(1.2);
-        box-shadow: 0 0 15px rgba(0,0,0,0.15);
+        transform: scale(1.25);
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
       }
     </style>
 
@@ -115,20 +109,17 @@ const { title, description } = Astro.props;
           }
         };
 
-        // 跨页面自动接力状态
         syncUI();
 
         container.onclick = () => {
           if (audio.paused) {
-            audio.play().then(syncUI).catch(e => console.log("Init blocked"));
+            audio.play().then(syncUI).catch(e => console.log("Blocked"));
           } else {
             audio.pause();
             syncUI();
           }
         };
       }
-
-      // 响应 Astro 视图转换，确保跳转页面后逻辑依然存活
       document.addEventListener('astro:page-load', initBioMusePlayer);
     </script>
   </body>

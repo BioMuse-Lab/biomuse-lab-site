@@ -25,99 +25,109 @@ const { title, description } = Astro.props;
       <slot />
     </main>
 
-    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px;">
+    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px;">
       
-      <div id="music-orbit" style="position: absolute; width: 46px; height: 46px; border: 1.5px solid #1a1a1a; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1;"></div>
+      <div id="music-core" style="position: absolute; width: 12px; height: 12px; background: #1a1a1a; border-radius: 50%; z-index: 3; transition: all 0.4s ease;"></div>
 
-      <div id="music-disk" style="position: absolute; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 2; transition: all 0.3s ease;">
-        <div id="music-icon" style="color: #1a1a1a; opacity: 0.5;">
-          <svg viewBox="0 0 24 24" width="38" height="38" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <div id="music-galaxy" style="position: absolute; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; z-index: 2; transition: all 0.3s ease;">
+        <div id="music-orbits" style="color: #1a1a1a; opacity: 0.3; transform-origin: center;">
+          <svg viewBox="0 0 24 24" width="44" height="44" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <circle cx="12" cy="12" r="6"></circle>
-            <circle cx="12" cy="12" r="2"></circle>
+            <circle cx="12" cy="12" r="2.5"></circle>
           </svg>
         </div>
       </div>
 
-      <div id="music-core" style="position: absolute; width: 10px; height: 10px; background: #1a1a1a; border-radius: 50%; z-index: 3; transition: all 0.3s ease;"></div>
+      <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid rgba(0,0,0,0.05);"></div>
 
       <audio id="bg-music" src="/audio/Opus55.mp3" loop transition:persist></audio>
     </div>
 
     <style is:global>
-      /* 【关键】灵动“眼珠打转”动画 (Eye-rolling) */
-      @keyframes eye-rolling {
-        0%, 100% { transform: translate(0, 0); } /* 回到中心 */
-        15% { transform: translate(1.5px, -1.5px); } /* 右上偏 */
-        30% { transform: translate(1.5px, 1.5px); } /* 右下偏 */
-        50% { transform: translate(-1.5px, 1.5px); } /* 左下偏 */
-        70% { transform: translate(-1.5px, -1.5px); } /* 左上偏 */
-        85% { transform: translate(0, -2px); } /* 正上偏（沉思感） */
+      /* 动画 A：星系自转 */
+      @keyframes galaxy-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
       }
 
-      /* 平时静止时的淡淡呼吸提示 */
-      @keyframes hint-breathe {
-        0% { opacity: 0.4; }
-        50% { opacity: 0.6; }
-        100% { opacity: 0.4; }
+      /* 动画 B：灵动打转（位移漂移，像眼珠打转） */
+      @keyframes eye-roll {
+        0%, 100% { transform: translate(0, 0); }
+        25% { transform: translate(2px, -2px); }
+        50% { transform: translate(-1px, 2px); }
+        75% { transform: translate(-2px, -1px); }
       }
 
-      /* 默认：“眼白”执行呼吸提示动画 */
-      #music-icon {
-        animation: hint-breathe 3s ease-in-out infinite;
+      /* 动画 C：深层呼吸（缩放 + 透明度） */
+      @keyframes deep-breathe {
+        0%, 100% { transform: scale(0.92); opacity: 0.3; }
+        50% { transform: scale(1.08); opacity: 0.6; }
       }
 
-      /* 核心逻辑：播放时（拥有 .playing-active 类）的状态 */
+      /* 初始状态：仅执行深层呼吸 */
+      #music-orbits {
+        animation: deep-breathe 4s ease-in-out infinite;
+      }
+
+      /* 【播放激活状态】 */
       
-      /* 当拥有 .playing-active 类时，“眼白”停止呼吸，开始“打转” */
-      .playing-active #music-disk {
-        animation: eye-rolling 5s ease-in-out infinite !important; /* 开启灵动打转，持续时间较长以显幽幽感 */
-        opacity: 1 !important;
+      /* 核心变黑变亮 */
+      .playing #music-core {
+        background: #000;
+        box-shadow: 0 0 12px rgba(0,0,0,0.2);
+        transform: scale(1.2);
       }
 
-      /* 播放时增强瞳孔和眼眶的视觉锚点感 */
-      .playing-active #music-core {
-        background: #000;
-        transform: scale(1.1);
+      /* 轨道层：叠加旋转、打转和呼吸 */
+      .playing #music-orbits {
+        /* 同时运行三个动画：自转(4s)、打转(5s)、呼吸(3s) */
+        animation: 
+          galaxy-rotate 4s linear infinite, 
+          eye-roll 5s ease-in-out infinite, 
+          deep-breathe 3s ease-in-out infinite !important;
+        opacity: 0.9 !important;
+        color: #000 !important;
       }
-      .playing-active #music-orbit {
-        border-color: #000;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+
+      /* 鼠标悬停时的微调 */
+      #music-container:hover #music-core {
+        transform: scale(1.3);
       }
     </style>
 
     <Footer />
 
     <script is:inline>
-      function initEyePlayer() {
+      function initBioMusePlayer() {
         const container = document.getElementById('music-container');
         const audio = document.getElementById('bg-music');
         
         if (!container || !audio) return;
 
-        const syncUIState = () => {
+        const refreshUI = () => {
           if (!audio.paused) {
-            container.classList.add('playing-active');
+            container.classList.add('playing');
           } else {
-            container.classList.remove('playing-active');
+            container.classList.remove('playing');
           }
         };
 
-        // 跨页面状态接力
-        syncUIState();
+        // 跨页面自动接力状态
+        refreshUI();
 
         container.onclick = () => {
           if (audio.paused) {
-            audio.play().then(syncUIState).catch(err => console.log("Blocked"));
+            audio.play().then(refreshUI).catch(e => console.log("Init blocked"));
           } else {
             audio.pause();
-            syncUIState();
+            refreshUI();
           }
         };
       }
 
-      // 确保在 Astro 全站跳转（View Transitions）后依然能执行初始化
-      document.addEventListener('astro:page-load', initEyePlayer);
+      // 响应 Astro 视图转换
+      document.addEventListener('astro:page-load', initBioMusePlayer);
     </script>
   </body>
 </html>

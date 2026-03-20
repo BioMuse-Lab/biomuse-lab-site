@@ -17,12 +17,12 @@ body {
 }
 
 body {
-  @apply font-serif antialiased;
-  @apply flex flex-col;
+  /* 统一使用衬线体，并增加抗锯齿 */
+  @apply font-serif antialiased flex flex-col;
   @apply bg-stone-100 dark:bg-stone-900;
   @apply text-black/50 dark:text-white/75;
-  line-height: 1.8;      /* 增加行间距 */
-  letter-spacing: 0.02em; /* 增加微小的字间距 */
+  line-height: 1.8;
+  letter-spacing: 0.02em;
 }
 
 header {
@@ -73,11 +73,9 @@ html #back-to-top {
 html.scrolled #back-to-top {
   @apply opacity-100 pointer-events-auto;
 }
-/* 让全站的文章内容和列表描述都使用优雅的衬线体 */
-article, .work-content, .experience-list, p {
-  font-family: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", serif;
+
+/* 优雅的衬线体增强（仅针对正文内容） */
+p, .work-content, .experience-list {
   font-weight: 400;
-  line-height: 1.8;      /* 增加行间距，更具流动感 */
-  letter-spacing: 0.01em; /* 稍微拉开字间距 */
-  color: #333;           /* 稍微柔和的黑色 */
+  color: #333;
 }

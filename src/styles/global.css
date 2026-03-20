@@ -12,24 +12,19 @@ html.dark {
 }
 
 html, body {
-  height: 100%;
-  width: 100%;
+  @apply size-full;
 }
 
 body {
-  /* 苹果、安卓、Windows 全平台衬线体兼容方案 */
+  /* 这里的顺序是关键：ui-serif 救苹果，Georgia 救电脑，serif 救安卓 */
   font-family: ui-serif, Georgia, "Lora", serif !important;
-  @apply antialiased flex flex-col;
-  background-color: #f5f5f4; /* stone-100 */
-  color: #444; /* 稍微柔和的深灰色，更有质感 */
+  @apply antialiased flex flex-col bg-stone-100 dark:bg-stone-900 text-black/50 dark:text-white/75;
   line-height: 1.8;
   letter-spacing: 0.02em;
 }
 
 header {
-  @apply fixed top-0 left-0 right-0 z-50 py-5;
-  background-color: rgba(245, 245, 244, 0.8); /* 替代 stone-100/75 */
-  backdrop-filter: blur(8px);
+  @apply fixed top-0 left-0 right-0 z-50 py-5 bg-stone-100/75 dark:bg-stone-900/25 backdrop-blur-sm saturate-200;
 }
 
 main {
@@ -44,10 +39,10 @@ article {
   @apply max-w-full prose dark:prose-invert;
 }
 
-p, li, .work-content, .experience-list {
-  /* 针对正文内容再次加固衬线体 */
+/* 强制让履历部分的文字也遵循衬线体 */
+p, li, .work-content {
   font-family: ui-serif, Georgia, "Lora", serif !important;
-  font-weight: 400;
+  color: #333;
 }
 
 #back-to-top {

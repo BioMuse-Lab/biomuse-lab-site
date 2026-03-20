@@ -25,47 +25,53 @@ const { title, description } = Astro.props;
       <slot />
     </main>
 
-    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer;">
-      <div id="music-disk" style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
-        <div id="music-icon" style="display: flex; align-items: center; justify-content: center; color: white;">
-          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="4"></circle>
-            <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
-          </svg>
+    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+      <div id="music-wrapper" style="position: relative; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+        
+        <div id="music-ring" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.7); border-top-color: transparent; transition: all 0.3s ease;"></div>
+        
+        <div id="music-disk" style="width: 36px; height: 36px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 2;">
+          <div id="music-icon" style="color: white; opacity: 0.6;">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
+            </svg>
+          </div>
         </div>
       </div>
       <audio id="bg-music" src="/audio/Opus55.mp3" loop transition:persist></audio>
     </div>
 
     <style is:global>
-      /* 旋转动画 */
-      @keyframes rotate-disk {
+      /* 动画 1：呼吸灯（用于提示交互） */
+      @keyframes ring-breathe {
+        0% { transform: scale(0.9); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.7; }
+        100% { transform: scale(0.9); opacity: 0.3; }
+      }
+
+      /* 动画 2：匀速圆周旋转（用于播放反馈） */
+      @keyframes ring-rotate {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
 
-      /* 呼吸提示动画：让用户知道这是个可以点的按钮 */
-      @keyframes breathe {
-        0% { opacity: 0.4; transform: scale(0.95); }
-        50% { opacity: 0.8; transform: scale(1.05); }
-        100% { opacity: 0.4; transform: scale(0.95); }
+      /* 初始状态：外层光环执行呼吸动画 */
+      #music-ring {
+        animation: ring-breathe 3s ease-in-out infinite;
       }
 
-      #music-disk {
-        transition: all 0.3s ease;
-        animation: breathe 3s ease-in-out infinite;
+      /* 播放状态：切换到匀速旋转，并增强亮度 */
+      .playing-active #music-ring {
+        animation: ring-rotate 2s linear infinite !important;
+        border-color: white !important;
+        border-top-color: transparent !important;
+        opacity: 1 !important;
       }
 
-      /* 鼠标悬停增强交互感 */
-      #music-container:hover #music-disk {
-        background: #222;
-        box-shadow: 0 0 15px rgba(255,255,255,0.1);
-      }
-
-      /* 播放时的状态：旋转动画会通过 !important 覆盖掉呼吸动画 */
-      .rotating {
-        animation: rotate-disk 4s linear infinite !important;
+      /* 播放时内层图标变亮 */
+      .playing-active #music-icon {
         opacity: 1 !important;
       }
     </style>
@@ -73,32 +79,36 @@ const { title, description } = Astro.props;
     <Footer />
 
     <script is:inline>
-      function setupMusic() {
+      function initMusicPlayer() {
         const container = document.getElementById('music-container');
-        const disk = document.getElementById('music-disk');
         const audio = document.getElementById('bg-music');
         
-        if (!container || !audio || !disk) return;
+        if (!container || !audio) return;
 
-        // 【关键】跨页面状态继承：如果跳转后发现音乐在响，立刻让唱片转起来
-        if (!audio.paused) {
-          disk.classList.add('rotating');
-        }
+        // 核心逻辑：根据音频状态同步视觉类名
+        const syncUI = () => {
+          if (!audio.paused) {
+            container.classList.add('playing-active');
+          } else {
+            container.classList.remove('playing-active');
+          }
+        };
 
-        // 绑定点击事件
+        // 跨页面接力时自动同步一次
+        syncUI();
+
         container.onclick = () => {
           if (audio.paused) {
-            audio.play().catch(e => console.log("Playback blocked"));
-            disk.classList.add('rotating');
+            audio.play().then(syncUI).catch(e => console.log("Blocked"));
           } else {
             audio.pause();
-            disk.classList.remove('rotating');
+            syncUI();
           }
         };
       }
 
-      // 确保在 Astro 全站跳转（View Transitions）后依然能执行初始化
-      document.addEventListener('astro:page-load', setupMusic);
+      // 确保在 Astro 全站跳转后依然激活脚本
+      document.addEventListener('astro:page-load', initMusicPlayer);
     </script>
   </body>
 </html>

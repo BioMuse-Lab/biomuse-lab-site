@@ -3,7 +3,6 @@ import Head from "@components/Head.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import { SITE } from "@consts";
-// 【核心：ViewTransitions 必须放在这个 --- 区域内】
 import { ViewTransitions } from 'astro:transitions';
 
 type Props = {
@@ -18,7 +17,6 @@ const { title, description } = Astro.props;
 <html lang="en">
   <head>
     <Head title={`${title} | ${SITE.NAME}`} description={description} />
-    {/* 这里调用 ViewTransitions，确保全站跳转不断音 */}
     <ViewTransitions />
   </head>
   <body>
@@ -37,30 +35,44 @@ const { title, description } = Astro.props;
           </svg>
         </div>
       </div>
-      {/* transition:persist 是跨页面不断音的核心黑科技 */}
       <audio id="bg-music" src="/audio/Opus55.mp3" loop transition:persist></audio>
     </div>
 
     <style is:global>
-      /* 旋转动画：丝滑匀速圆周运动 */
+      /* 旋转动画 */
       @keyframes rotate-disk {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
 
-      /* 核心逻辑：拥有 .rotating 类时，强制全速旋转 */
-      .rotating {
-        animation: rotate-disk 4s linear infinite !important; /* !important 确保覆盖呼吸动画 */
-        opacity: 1 !important;
+      /* 呼吸提示动画：让用户知道这是个可以点的按钮 */
+      @keyframes breathe {
+        0% { opacity: 0.4; transform: scale(0.95); }
+        50% { opacity: 0.8; transform: scale(1.05); }
+        100% { opacity: 0.4; transform: scale(0.95); }
       }
 
-      /* ...你之前的呼吸动画代码... */
+      #music-disk {
+        transition: all 0.3s ease;
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      /* 鼠标悬停增强交互感 */
+      #music-container:hover #music-disk {
+        background: #222;
+        box-shadow: 0 0 15px rgba(255,255,255,0.1);
+      }
+
+      /* 播放时的状态：旋转动画会通过 !important 覆盖掉呼吸动画 */
+      .rotating {
+        animation: rotate-disk 4s linear infinite !important;
+        opacity: 1 !important;
+      }
     </style>
 
     <Footer />
 
     <script is:inline>
-      // 1. 定义一个“激活唱片”的初始化函数
       function setupMusic() {
         const container = document.getElementById('music-container');
         const disk = document.getElementById('music-disk');
@@ -68,25 +80,24 @@ const { title, description } = Astro.props;
         
         if (!container || !audio || !disk) return;
 
-        // 【核心记忆：跳转页面后，检查音乐是否还在播】
+        // 【关键】跨页面状态继承：如果跳转后发现音乐在响，立刻让唱片转起来
         if (!audio.paused) {
-          // 只要还在播，就立刻给新页面的图标加上旋转类
           disk.classList.add('rotating');
         }
 
-        // 2. 绑定点击事件（防止跳转后点击失效）
+        // 绑定点击事件
         container.onclick = () => {
           if (audio.paused) {
-            audio.play().catch(e => console.log("Blocked"));
-            disk.classList.add('rotating'); // 点击播放，开始旋转
+            audio.play().catch(e => console.log("Playback blocked"));
+            disk.classList.add('rotating');
           } else {
             audio.pause();
-            disk.classList.remove('rotating'); // 点击暂停，停止旋转
+            disk.classList.remove('rotating');
           }
         };
       }
 
-      // 3. 关键：在 Astro 页面加载和跳转完成后执行初始化
+      // 确保在 Astro 全站跳转（View Transitions）后依然能执行初始化
       document.addEventListener('astro:page-load', setupMusic);
     </script>
   </body>

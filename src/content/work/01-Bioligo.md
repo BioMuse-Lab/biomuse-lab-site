@@ -1,5 +1,5 @@
 ---
-company: "百力格生物公司"
+company: "上海某生物公司"
 role: "科研销售"
 dateStart: "July 2024"
 dateEnd: "Mar 2026"

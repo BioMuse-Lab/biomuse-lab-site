@@ -42,54 +42,51 @@ const { title, description } = Astro.props;
     </div>
 
     <style is:global>
+      /* 旋转动画：丝滑匀速圆周运动 */
       @keyframes rotate-disk {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
-      @keyframes breathe {
-        0% { opacity: 0.4; transform: scale(0.95); }
-        50% { opacity: 0.8; transform: scale(1.05); }
-        100% { opacity: 0.4; transform: scale(0.95); }
-      }
-      #music-disk {
-        transition: all 0.3s ease;
-        animation: breathe 3s ease-in-out infinite;
-      }
+
+      /* 核心逻辑：拥有 .rotating 类时，强制全速旋转 */
       .rotating {
-        animation: rotate-disk 4s linear infinite !important;
+        animation: rotate-disk 4s linear infinite !important; /* !important 确保覆盖呼吸动画 */
         opacity: 1 !important;
       }
+
+      /* ...你之前的呼吸动画代码... */
     </style>
 
     <Footer />
 
     <script is:inline>
-      // 定义初始化函数，确保跳转后逻辑依然可用
+      // 1. 定义一个“激活唱片”的初始化函数
       function setupMusic() {
         const container = document.getElementById('music-container');
         const disk = document.getElementById('music-disk');
         const audio = document.getElementById('bg-music');
         
-        if (!container || !audio) return;
+        if (!container || !audio || !disk) return;
 
-        // 如果跳转回来发现音乐还在播，自动让图标继续转
+        // 【核心记忆：跳转页面后，检查音乐是否还在播】
         if (!audio.paused) {
+          // 只要还在播，就立刻给新页面的图标加上旋转类
           disk.classList.add('rotating');
         }
 
-        // 绑定点击事件
+        // 2. 绑定点击事件（防止跳转后点击失效）
         container.onclick = () => {
           if (audio.paused) {
-            audio.play().catch(e => console.log("Playback blocked"));
-            disk.classList.add('rotating');
+            audio.play().catch(e => console.log("Blocked"));
+            disk.classList.add('rotating'); // 点击播放，开始旋转
           } else {
             audio.pause();
-            disk.classList.remove('rotating');
+            disk.classList.remove('rotating'); // 点击暂停，停止旋转
           }
         };
       }
 
-      // 关键：在 Astro 页面加载和跳转完成后执行初始化
+      // 3. 关键：在 Astro 页面加载和跳转完成后执行初始化
       document.addEventListener('astro:page-load', setupMusic);
     </script>
   </body>

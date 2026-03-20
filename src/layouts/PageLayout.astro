@@ -1,3 +1,17 @@
+---
+import Head from "@components/Head.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import { SITE } from "@consts";
+
+type Props = {
+  title: string;
+  description: string;
+};
+
+const { title, description } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -32,8 +46,11 @@
       }
     </style>
 
-    **<Footer />** <script is:inline>
-      **document.addEventListener('DOMContentLoaded', () => {** const container = document.getElementById('music-container');
+    <Footer />
+
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('music-container');
         const disk = document.getElementById('music-disk');
         const audio = document.getElementById('bg-music');
         const icon = document.getElementById('music-icon');
@@ -46,12 +63,14 @@
               disk.classList.remove('rotating');
               if (icon) icon.style.opacity = '0.5';
             } else {
-              **audio.play().catch(e => console.log("播放被拦截"));** disk.classList.add('rotating');
+              audio.play().catch(e => console.log("Playback blocked"));
+              disk.classList.add('rotating');
               if (icon) icon.style.opacity = '1';
             }
             isPlaying = !isPlaying;
           });
         }
-      **});** </script>
+      });
+    </script>
   </body>
 </html>

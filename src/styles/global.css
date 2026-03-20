@@ -17,10 +17,12 @@ body {
 }
 
 body {
-  @apply font-sans antialiased;
+  @apply font-serif antialiased;
   @apply flex flex-col;
   @apply bg-stone-100 dark:bg-stone-900;
   @apply text-black/50 dark:text-white/75;
+  line-height: 1.8;      /* 增加行间距 */
+  letter-spacing: 0.02em; /* 增加微小的字间距 */
 }
 
 header {

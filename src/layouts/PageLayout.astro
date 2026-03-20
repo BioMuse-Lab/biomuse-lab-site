@@ -1,17 +1,3 @@
----
-import Head from "@components/Head.astro";
-import Header from "@components/Header.astro";
-import Footer from "@components/Footer.astro";
-import { SITE } from "@consts";
-
-type Props = {
-  title: string;
-  description: string;
-};
-
-const { title, description } = Astro.props;
----
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -22,52 +8,50 @@ const { title, description } = Astro.props;
     <main>
       <slot />
     </main>
-<div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer;">
-  <div id="music-disk" style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-    <div id="music-icon" style="display: flex; align-items: center; justify-content: center; opacity: 0.5; transition: opacity 0.3s ease;">
-      <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="12" r="4"></circle>
-        <circle cx="12" cy="12" r="1" fill="white"></circle>
-      </svg>
+
+    <div id="music-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; cursor: pointer;">
+      <div id="music-disk" style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+        <div id="music-icon" style="display: flex; align-items: center; justify-content: center; opacity: 0.5; transition: opacity 0.3s ease;">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="12" cy="12" r="1" fill="white"></circle>
+          </svg>
+        </div>
+      </div>
+      <audio id="bg-music" src="/audio/Opus55.mp3" loop></audio>
     </div>
-  </div>
-  <audio id="bg-music" src="/audio/Opus55.m4a" loop></audio>
-</div>
 
-<style>
-  @keyframes rotate-disk {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  .rotating {
-    animation: rotate-disk 4s linear infinite;
-  }
-</style>
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('music-container');
-    const disk = document.getElementById('music-disk');
-    const audio = document.getElementById('bg-music');
-    const icon = document.getElementById('music-icon');
-    let isPlaying = false;
+    <style>
+      @keyframes rotate-disk {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .rotating {
+        animation: rotate-disk 4s linear infinite;
+      }
+    </style>
 
-    if (container && audio) {
-      container.addEventListener('click', () => {
-        if (isPlaying) {
-          audio.pause();
-          disk.classList.remove('rotating');
-          if (icon) icon.style.opacity = '0.5';
-        } else {
-          audio.play().catch(e => console.log("播放被拦截，需要交互"));
-          disk.classList.add('rotating');
-          if (icon) icon.style.opacity = '1';
+    **<Footer />** <script is:inline>
+      **document.addEventListener('DOMContentLoaded', () => {** const container = document.getElementById('music-container');
+        const disk = document.getElementById('music-disk');
+        const audio = document.getElementById('bg-music');
+        const icon = document.getElementById('music-icon');
+        let isPlaying = false;
+
+        if (container && audio) {
+          container.addEventListener('click', () => {
+            if (isPlaying) {
+              audio.pause();
+              disk.classList.remove('rotating');
+              if (icon) icon.style.opacity = '0.5';
+            } else {
+              **audio.play().catch(e => console.log("播放被拦截"));** disk.classList.add('rotating');
+              if (icon) icon.style.opacity = '1';
+            }
+            isPlaying = !isPlaying;
+          });
         }
-        isPlaying = !isPlaying;
-      });
-    }
-  });
-</script>
-    <Footer />
+      **});** </script>
   </body>
 </html>

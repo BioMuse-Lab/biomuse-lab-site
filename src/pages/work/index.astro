@@ -18,10 +18,19 @@ const work = await Promise.all(
 
 <PageLayout title={WORK.TITLE} description={WORK.DESCRIPTION}>
   <Container>
-    <div class="space-y-10">
-      <div class="animate font-semibold text-black dark:text-white">
-        Work
-      </div>
+    <div class="animate flex gap-2">
+      <a href="/" class="relative group w-fit flex items-center gap-1.5 px-3 py-1.5 rounded border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 ease-in-out text-black dark:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform duration-300 ease-in-out">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+    <span class="text-sm">返回主页</span>
+  </a>
+
+  <BackToPrev href="/">
+    Back to Home
+  </BackToPrev>
+</div>
       <ul class="flex flex-col space-y-4">
         { 
           work.map(entry => (

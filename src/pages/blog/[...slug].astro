@@ -38,8 +38,10 @@ const { Content } = await post.render();
       </BackToPrev>
     </div>
     <div class="space-y-1 my-10 text-stone-600 dark:text-stone-400">
-      <div class="animate flex items-center gap-1.5">
+      <div class="animate flex items-center gap-1.5 text-sm">
         <FormattedDate date={post.data.date} />
+        <span>·</span>
+        <span id="view-count">... 次阅读</span>
       </div>
       <div class="animate text-2xl font-semibold text-black dark:text-white">
         {post.data.title}
@@ -135,52 +137,79 @@ const { Content } = await post.render();
 </PageLayout>
 
 <script is:inline>
-  // 1. 填入你的 Supabase 凭证
   const SUPABASE_URL = 'https://qernpndylyidpkkxapvc.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_MS5LLXfj-dri8s3OuzEtpQ_Y-6Q0I38';
-  
-  // 获取当前文章路径 (去除末尾斜杠)
   const postSlug = window.location.pathname.replace(/\/$/, ""); 
+  const storageKey = `liked_${postSlug}`;
 
   document.addEventListener('astro:page-load', async () => {
     const likeBtn = document.querySelector('.like-btn');
     const likeText = likeBtn?.querySelector('span');
     const heartIcon = likeBtn?.querySelector('svg');
+    const viewCountEl = document.getElementById('view-count');
     const commentBtn = document.querySelector('.comment-btn');
     const shareBtn = document.querySelector('.share-btn');
 
     if (!likeBtn) return;
 
-    // --- 逻辑 A: 获取初始点赞数 ---
-    async function getInitialLikes() {
-      try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/post_stats?slug=eq.${postSlug}&select=likes`, {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
-        const data = await response.json();
-        
-        if (data.length > 0) {
-          likeText.innerText = `${data[0].likes} 喜欢`;
-        } else {
-          // 初始化记录
-          await fetch(`${SUPABASE_URL}/rest/v1/post_stats`, {
-            method: 'POST',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug: postSlug, likes: 0 })
-          });
-          likeText.innerText = `0 喜欢`;
-        }
-      } catch (e) { console.error("Database error:", e); }
+    // 状态恢复：如果点过赞，心变红
+    if (localStorage.getItem(storageKey)) {
+      heartIcon.setAttribute('fill', '#f43f5e');
+      heartIcon.setAttribute('stroke', '#f43f5e');
+      likeBtn.classList.add('text-rose-500');
     }
 
-    getInitialLikes();
+    // --- 核心逻辑：更新统计数据 (阅读量+1 并 获取点赞) ---
+    async function syncStats() {
+      try {
+        // 1. 先获取当前数据
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/post_stats?slug=eq.${postSlug}&select=likes,views`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        const data = await res.json();
 
-    // --- 逻辑 B: 点击增加点赞 ---
+        let likes = 0;
+        let views = 0;
+
+        if (data.length > 0) {
+          likes = data[0].likes || 0;
+          views = data[0].views || 0;
+          
+          // 2. 更新云端：阅读量 + 1
+          fetch(`${SUPABASE_URL}/rest/v1/post_stats?slug=eq.${postSlug}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ views: views + 1 })
+          });
+        } else {
+          // 3. 如果没记录，则初始化 (0赞 1看)
+          fetch(`${SUPABASE_URL}/rest/v1/post_stats`, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: postSlug, likes: 0, views: 1 })
+          });
+        }
+
+        // 4. 更新 UI
+        if (likeText) likeText.innerText = `${likes} 喜欢`;
+        if (viewCountEl) viewCountEl.innerText = `${views + 1} 次阅读`;
+
+      } catch (e) { console.error("Stats Error:", e); }
+    }
+
+    syncStats();
+
+    // --- 点赞点击逻辑 ---
     likeBtn.addEventListener('click', async () => {
+      if (localStorage.getItem(storageKey)) return; // 点过了就不让点了
+
+      // 视觉反馈
       heartIcon.setAttribute('fill', '#f43f5e');
       heartIcon.setAttribute('stroke', '#f43f5e');
       heartIcon.classList.add('scale-125');
       setTimeout(() => heartIcon.classList.remove('scale-125'), 200);
+      
+      localStorage.setItem(storageKey, 'true');
 
       const currentVal = parseInt(likeText.innerText) || 0;
       const newVal = currentVal + 1;
@@ -191,9 +220,9 @@ const { Content } = await post.render();
         body: JSON.stringify({ likes: newVal })
       });
       likeText.innerText = `${newVal} 喜欢`;
-    }, { once: true }); // 防止疯狂刷票
+    }, { once: true });
 
-    // --- 逻辑 C: 评论与转发功能 ---
+    // 评论与分享逻辑保持不变...
     commentBtn?.addEventListener('click', () => {
       document.querySelector('.giscus')?.scrollIntoView({ behavior: 'smooth' });
     });

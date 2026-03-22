@@ -11,6 +11,7 @@ import lora600 from "@fontsource/lora/files/lora-latin-600-normal.woff2";
 
 import { ClientRouter } from "astro:transitions";
 import { SITE } from "@consts";
+import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title: string;
@@ -61,6 +62,9 @@ const { title, description, image = "/nano.png" } = Astro.props;
 
 <!-- RSS Link -->
 <link rel="alternate" type="application/rss+xml" title={SITE.NAME} href={new URL("rss.xml", Astro.site)} />
+
+<!-- Vercel Analytics -->
+<Analytics />
 
 <script>
   import type { TransitionBeforeSwapEvent } from "astro:transitions/client";
@@ -209,7 +213,7 @@ function toggleTheme(dark) {
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 3. 针对列表容器的二次加固，确保职业履历的圆点和文字对齐且优雅 */
+  /* 3. 针对列表���器的二次加固，确保职业履历的圆点和文字对齐且优雅 */
   ul, ol {
     font-family: ui-serif, Georgia, "Lora", serif !important;
   }

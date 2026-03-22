@@ -1,1 +1,93 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE } from "@consts";
+---
 
+<PageLayout title="BioMuse Lab | FR" description="Forteresse numérique d'une femme sans forme">
+  <Container>
+    <div class="space-y-16">
+      
+      <section>
+        <article class="space-y-4 text-black/80 dark:text-white/80">
+          <h4 class="animate font-semibold text-black dark:text-white">
+            Juste ici, telle que je suis 👋🏻
+          </h4>
+          <p class="animate">
+            Une femme sans forme, explorant actuellement au sein d'une entreprise de biotechnologie à Shanghai.
+          </p>
+          <p class="animate">
+            Considérer l'ensemble du parcours de vie comme une œuvre créative, en maintenant un état de flux continu. Écrire ce qui est scriptible, rester sincère et authentique dans les podcasts, et documenter les réflexions professionnelles et les méthodologies de recherche en sciences de la vie.
+          </p>
+          <p class="animate">
+            Construire un « Laboratoire de Résonance » reliant la <strong>« Création Emotionnelle »</strong> à la <strong>« Expérimentation Rationnelle. »</strong>
+          </p>
+          <p class="animate border-l-2 border-black/10 dark:border-white/10 pl-4 italic">
+            « Tout passe à travers moi, je le rassemble dans mon vaisseau. » <br/>
+            L'écriture, la recherche et l'art sont des formes d'expression interconnectées — les traces continues de la vie coulant dans ce vaisseau.
+          </p>
+        </article>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 justify-between items-center">
+          <h5 class="font-semibold text-black dark:text-white">Articles Récents</h5>
+          <a href="/blog" class="text-sm border-b border-black/20 dark:border-white/20">Tout voir</a>
+        </div>
+        <p class="text-sm italic text-black/50 dark:text-white/50">La synchronisation des versions françaises est en cours...</p>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 justify-between items-center border-b border-black/5 pb-2">
+          <h5 class="font-semibold text-black dark:text-white">Trajectoires de vie & Expérimentations</h5>
+        </div>
+        
+        <div class="space-y-10">
+          <div>
+            <div class="text-xs text-black/50 dark:text-white/50">Juil 2024 - Mar 2026</div>
+            <div class="font-semibold text-sm text-black dark:text-white">Bioligo (Shanghai)</div>
+            <div class="text-xs italic mb-2">Ventes Scientifiques</div>
+            <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
+              Faire le pont entre la recherche académique et l'industrie. Focus sur les technologies des acides nucléiques et la thérapie cellulaire CAR-T.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-xs text-black/50 dark:text-white/50">Nov 2025 - Fév 2026</div>
+            <div class="font-semibold text-sm text-black dark:text-white">Starbucks</div>
+            <div class="text-xs italic mb-2">Barista</div>
+            <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
+              Observer le flux incessant de l'humanité au milieu du quotidien — une pratique spirituelle dans les tâches ordinaires.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-xs text-black/50 dark:text-white/50">Juin 2025 - Juin 2025</div>
+            <div class="font-semibold text-sm text-black dark:text-white">Entreprise MCN Media</div>
+            <div class="text-xs italic mb-2">Livestreamer</div>
+            <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
+              Témoigner de la fabrication des « influenceurs » et explorer la machinerie derrière l'identité numérique.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-xs text-black/50 dark:text-white/50">Sep 2021 - Juil 2024</div>
+            <div class="font-semibold text-sm text-black dark:text-white">ECUST (Pharmacie)</div>
+            <div class="text-xs italic mb-2">Étudiante en Master</div>
+            <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
+              Recherche sur l'intégration de la thérapie CAR-T et des puces microfluidiques. Une étape d'affirmation de soi face aux structures systémiques.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="animate space-y-4 pb-12">
+        <h5 class="font-semibold text-black dark:text-white">Me Contacter</h5>
+        <div class="flex flex-wrap gap-3 text-sm underline text-black/70 dark:text-white/70">
+          <a href="#">Compte Officiel</a> / <a href="#">Podcast</a> / <a href="#">Site Web</a> / <a href="mailto:rightheretc@163.com">rightheretc@163.com</a>
+        </div>
+      </section>
+
+    </div>
+  </Container>
+</PageLayout>

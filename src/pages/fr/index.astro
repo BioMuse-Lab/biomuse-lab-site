@@ -6,7 +6,7 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { SITE } from "@consts";
 
 const posts = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
+  .filter(post => !post.data.draft && post.data.lang === "fr") // ✨ 核心：只抓取法语文章
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 ---

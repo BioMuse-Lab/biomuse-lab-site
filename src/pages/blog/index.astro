@@ -13,7 +13,13 @@ const isDe = url.includes('/de');
 const isFr = url.includes('/fr');
 
 const data = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
+  .filter(post => {
+    const isDraft = post.data.draft;
+    if (isEn) return !isDraft && post.data.lang === 'en';
+    if (isDe) return !isDraft && post.data.lang === 'de';
+    if (isFr) return !isDraft && post.data.lang === 'fr';
+    return !isDraft && (post.data.lang === 'cn' || !post.data.lang);
+  })
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   
 type Acc = {

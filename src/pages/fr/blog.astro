@@ -1,0 +1,76 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import { SITE } from "@consts";
+
+// ✨ 核心逻辑：只抓取法文文章并按时间排序
+const data = (await getCollection("blog"))
+  .filter(post => !post.data.draft && post.data.lang === "fr")
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+type Acc = {
+  [year: string]: any[];
+}
+
+const posts = data.reduce((acc: Acc, post) => {
+  const year = post.data.date.getFullYear().toString();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {});
+
+const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<PageLayout title="Blog | BioMuse Lab" description="Explorations en sciences de la vie, art et pensée critique">
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-semibold text-black dark:text-white">
+        Articles
+      </div>
+      
+      <div class="space-y-4">
+        <section class="animate space-y-4">
+          <div class="flex flex-wrap gap-2">
+            <a href="/fr" class="group flex items-center gap-1 border border-black/10 dark:border-white/20 px-3 py-1 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span class="text-sm">Retour à l'accueil</span>
+            </a>
+          </div>
+        </section>
+
+        <div class="space-y-10">
+          {years.length === 0 ? (
+            <p class="animate text-sm italic text-black/50 dark:text-white/50">
+              Traductions en cours...
+            </p>
+          ) : (
+            years.map(year => (
+              <section class="animate space-y-4">
+                <div class="font-semibold text-black dark:text-white">
+                  {year}
+                </div>
+                <div>
+                  <ul class="flex flex-col gap-4">
+                    {posts[year].map((post) => (
+                      <li>
+                        <ArrowCard entry={post}/>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  </Container>
+</PageLayout>

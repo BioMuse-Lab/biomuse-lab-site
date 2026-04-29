@@ -10,6 +10,7 @@ tags: ["人物", "上海"]
 
 ![一名没有形状的女子](/images/banner.png)
 大家好，我是**无暇顾及**，欢迎来这里玩耍。
+
 ---
 
 <img src="/images/640.jpg" width="60%" style="display: block; margin: 0 auto;" />

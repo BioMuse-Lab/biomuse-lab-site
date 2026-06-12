@@ -10,7 +10,7 @@ repoURL: "https://github.com/markhorn-dev/astro-sphere"
 就在此处，见**无暇顾及**👋🏻。
 
 ---
-<img src="/images/612.jpg" width="60%" style="display: block; margin: 0 auto;" />
+<img src="/images/612鱼.jpg" width="60%" style="display: block; margin: 0 auto;" />
                
 > **她表明了担忧。她看其他人是清楚的/可预测的，大概能够知道他们今后的人生走向，但是在我这边她是不清楚的，她看我是有雾气的/不可预测的，同时我的思考方式和表达方式不太一样，你不知道我今后会流向何方。“但是没有关系的啦！老师”我说。**
 

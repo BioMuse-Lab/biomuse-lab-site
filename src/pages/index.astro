@@ -7,7 +7,7 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流：只要不是草稿，且没有显式标明是外语（en/de/fr），一律作为中文主轴在首页放出
+// ✨ 1. 博客流：使用标准的 .valueOf() 进行原生 Date 类型的时间戳相减排序
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
@@ -17,13 +17,13 @@ const blog = allBlogs
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    const timeB = b.data.date ? b.data.date.valueOf() : 0;
+    const timeA = a.data.date ? a.data.date.valueOf() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品灵感流：完美兼容旧作品 1 与新作品 2（motherbook.md），直接前台放行
+// ✨ 2. 作品灵感流：完美托举旧作品 1 与新作品 2（motherbook.md），直接安全防爆
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
@@ -33,13 +33,13 @@ const projects = allProjects
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    const timeB = b.data.date ? b.data.date.valueOf() : 0;
+    const timeA = a.data.date ? a.data.date.valueOf() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
-// ✨ 3. 工作履历流保持原样
+// ✨ 3. 履历流保持原样
 const allwork = (await getCollection("work"))
   .sort((a, b) => {
     const getOrder = (id) => {

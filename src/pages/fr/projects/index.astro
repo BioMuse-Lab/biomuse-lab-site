@@ -4,12 +4,16 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
-// ✨ 核心数据流：只保留法文（lang: "fr"）
 const allProjects = await getCollection("projects");
+
+// ✨ 同步对齐：法文隔离流
 const projects = allProjects
-  .filter(project => project.data.lang === "fr")
-  // ✨ 核心修正：改用标准的 .getTime() 获取毫秒时间戳进行排序，彻底对齐 Date 类型
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .filter(project => project.data.lang === "fr") // 👈 锁定法文
+  .sort((a, b) => {
+    const timeB = new Date(b.data.date as any).getTime();
+    const timeA = new Date(a.data.date as any).getTime();
+    return timeB - timeA;
+  });
 ---
 
 <PageLayout title="Projets" description="Une collection d'idées créatives et de travaux.">

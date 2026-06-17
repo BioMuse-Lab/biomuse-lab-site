@@ -13,8 +13,8 @@ const blog = (await getCollection("blog"))
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
 const projects = (await getCollection("projects"))
-  .filter(project => !project.data.draft && (project.data.lang === "cn" || !project.data.lang)) // 首页只展示中文主轴，防止外语混入
-  .sort((a, b) => b.data.date.localeCompare(a.data.date)) // 👈 统一换成稳定的字符串本地排序
+  .filter(project => !project.data.draft && (project.data.lang === "cn" || !project.data.lang)) 
+  .sort((a, b) => b.data.date.localeCompare(a.data.date)) 
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
 const allwork = (await getCollection("work"))

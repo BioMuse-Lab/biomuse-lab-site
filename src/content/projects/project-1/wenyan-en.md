@@ -1,7 +1,12 @@
 ---
 title: "Mirrors and Anchors"
-description: "She expressed her concern. To her, other people are clear and predictable; she can generally foresee their future life paths. But with me, she sees a fog, an unpredictability. At the same time, my way of thinking and expressing myself is different—she doesn't know where I will eventually flow. 'But that doesn't matter at all, Professor,' I said."
+description: >
+  She expressed her worries. To her, other people are clear and predictable; she can generally foresee their future life paths. But with me, it is unclear; she sees a fog, a sense of unpredictability. At the same time, my way of thinking and expressing myself is different, leaving her unsure of where I will ultimately flow. "But that's perfectly fine, Teacher!" I said.
 date: "2026-06-12"
+Wechat URL: "https://mp.weixin.qq.com/s/FEnq4URF1uw6c0-oFbc9qQ"
+drawer: "/images/612鱼.jpg"
+lang: "en"
+tags: ["Inspirations"]
 ---
 
 ![An Unshaped Woman](/images/banner.png)

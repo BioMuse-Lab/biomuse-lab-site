@@ -10,9 +10,9 @@ import Link from "@components/Link.astro";
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
   
-  // ✨ 核心修正：使用最高防御级别的排序，彻底抹除 .valueOf() 的类型硬伤
+// ✨ 终极安全修正：将 .filter 校验降维打击，防止 undefined 引发 TypeScript 强杀构建
   const filteredProjects = projects
-    .filter(post => !post.data.draft)
+    .filter(post => post.data.draft !== true) // 👈 显式判断，完美避开 boolean | undefined 的类型陷阱
     .sort((a, b) => {
       const timeB = new Date(b.data.date as any).getTime();
       const timeA = new Date(a.data.date as any).getTime();

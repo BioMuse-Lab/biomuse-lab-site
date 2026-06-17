@@ -7,61 +7,86 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// 1. 博客流安全排序
-const allBlogs = await getCollection("blog");
-const blog = allBlogs
-  .filter(post => {
-    const isDraft = post.data.draft === true;
-    const lang = post.data.lang || "";
-    const isForeign = lang === "en" || lang === "de" || lang === "fr";
-    return !isDraft && !isForeign;
-  })
-  .sort((a, b) => {
-    const timeB = b.data.date ? b.data.date.valueOf() : 0;
-    const timeA = a.data.date ? a.data.date.valueOf() : 0;
-    return timeB - timeA;
-  })
-  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+// ✨ 1. 博客流绝对安全防御：确保空值不崩溃，保底空数组
+let blog = [];
+try {
+  const allBlogs = await getCollection("blog") || [];
+  blog = allBlogs
+    .filter(post => {
+      if (!post || !post.data) return false;
+      const isDraft = post.data.draft === true;
+      const lang = post.data.lang || "";
+      // 宽容模式：只要不是明确的外语，统统放行，严防空值归零
+      const isForeign = lang === "en" || lang === "de" || lang === "fr";
+      return !isDraft && !isForeign;
+    })
+    .sort((a, b) => {
+      const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
+      const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+      return timeB - timeA;
+    })
+    .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+} catch (e) {
+  console.error("首页博客流加载失败:", e);
+}
 
-// 2. 作品灵感流绝对安全排序（完美托举新老作品显形）
-const allProjects = await getCollection("projects");
-const projects = allProjects
-  .filter(project => {
-    const isDraft = project.data.draft === true;
-    const lang = project.data.lang || "";
-    const isForeign = lang === "en" || lang === "de" || lang === "fr";
-    return !isDraft && !isForeign;
-  })
-  .sort((a, b) => {
-    const timeB = b.data.date ? b.data.date.valueOf() : 0;
-    const timeA = a.data.date ? a.data.date.valueOf() : 0;
-    return timeB - timeA;
-  })
-  .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+// ✨ 2. 作品流绝对安全防御：确保新老作品能被平滑托举显形
+let projects = [];
+try {
+  const allProjects = await getCollection("projects") || [];
+  projects = allProjects
+    .filter(project => {
+      if (!project || !project.data) return false;
+      const isDraft = project.data.draft === true;
+      const lang = project.data.lang || "";
+      const isForeign = lang === "en" || lang === "de" || lang === "fr";
+      return !isDraft && !isForeign;
+    })
+    .sort((a, b) => {
+      const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
+      const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+      return timeB - timeA;
+    })
+    .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+} catch (e) {
+  console.error("首页作品流加载失败:", e);
+}
 
-const allwork = (await getCollection("work"))
-  .sort((a, b) => {
-    const getOrder = (id) => {
-      const lowerId = id.toLowerCase();
-      if (lowerId.includes('bioligo')) return 1;
-      if (lowerId.includes('ecust')) return 2;
-      if (lowerId.includes('starbarks')) return 3;
-      if (lowerId.includes('mcn')) return 4;
-      return 99;
-    };
-    return getOrder(a.id) - getOrder(b.id);
-  })
-  .slice(0, SITE.NUM_WORKS_ON_HOMEPAGE);
+// ✨ 3. 履历流绝对安全防御：彻底斩断可能导致 Promise.all 挂死的死锁源头
+let work = [];
+try {
+  const allwork = (await getCollection("work") || [])
+    .sort((a, b) => {
+      const getOrder = (id) => {
+        if (!id) return 99;
+        const lowerId = id.toLowerCase();
+        if (lowerId.includes('bioligo')) return 1;
+        if (lowerId.includes('ecust')) return 2;
+        if (lowerId.includes('starbarks')) return 3;
+        if (lowerId.includes('mcn')) return 4;
+        return 99;
+      };
+      return getOrder(a.id) - getOrder(b.id);
+    })
+    .slice(0, SITE.NUM_WORKS_ON_HOMEPAGE);
 
-const work = await Promise.all(
-  allwork.map(async (item) => {
-    try {
-      const { Content } = await item.render();
-      return { ...item, Content };
-    } catch (e) {
-      return { ...item, Content: null };
-    }
-  })
-);
+  work = await Promise.all(
+    allwork.map(async (item) => {
+      try {
+        // 使用 Promise.race 阻止单篇异常履历无限期挂起整张页面
+        const renderPromise = item.render();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Render timeout")), 2000)
+        );
+        const { Content } = await Promise.race([renderPromise, timeoutPromise]) as any;
+        return { ...item, Content };
+      } catch (e) {
+        console.warn(`单篇履历渲染跳过 [${item.id}]:`, e);
+        return { ...item, Content: null }; // 保底渲染，防止强杀首页
+      }
+    })
+  );
+} catch (e) {
+  console.error("首页履历流加载失败:", e);
+}
 ---
-

@@ -4,13 +4,17 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
-// ✨ 核心修正 1：读取真实的本地集合名称 'ideagallery'
+// ✨ 核心数据流：读取真实的本地集合名称 'projects'
 const allProjects = await getCollection("projects");
 
-// ✨ 核心修正 2：加装语言隔离网，只保留中文（lang: "cn"）的文章个体
+// ✨ 顶级防御排序：不管 data.date 是 String 还是 Date 对象，统一强制包裹 new Date() 确保安全
 const projects = allProjects
   .filter(project => project.data.lang === "cn")
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .sort((a, b) => {
+    const timeB = new Date(b.data.date).getTime();
+    const timeA = new Date(a.data.date).getTime();
+    return timeB - timeA;
+  });
 ---
 
 <PageLayout title="作品灵感" description="创造与实验的灵感集合。">

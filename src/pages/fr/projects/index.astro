@@ -5,7 +5,7 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
 // ✨ 核心数据流：只保留法文（lang: "fr"）
-const allProjects = await getCollection("ideagallery");
+const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => project.data.lang === "fr")
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());

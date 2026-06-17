@@ -3,10 +3,10 @@ import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
-import { SITE } from "@consts";
 
-// ✨ 核心数据流：获取集合，并且只保留英文（lang: "en"）的文章个体
-const projects = (await getCollection("projects"))
+// ✨ 核心数据流：读取真实的本地集合 'ideagallery'，并精准过滤出当前语种
+const allProjects = await getCollection("ideagallery");
+const projects = allProjects
   .filter(project => project.data.lang === "en")
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
@@ -22,7 +22,6 @@ const projects = (await getCollection("projects"))
         {
           projects.map((project) => (
             <li>
-              {/* 使用你现有的卡片组件渲染单篇文章个体 */}
               <ArrowCard entry={project} />
             </li>
           ))

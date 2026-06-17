@@ -7,18 +7,34 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 核心修正 1：利用安全的 new Date + getTime 排序机制，彻底对齐 blog 集合
+// ✨ 终极安全修正 1：利用极致的显式防御机制，彻底解开 blog 集合在主页的死锁
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
-  .filter(post => !post.data.draft && (post.data.lang === "cn" || !post.data.lang))
-  .sort((a, b) => new Date(b.data.date as any).getTime() - new Date(a.data.date as any).getTime())
+  .filter(post => {
+    const isDraft = post.data.draft === true;
+    const isCn = post.data.lang === "cn" || !post.data.lang;
+    return !isDraft && isCn;
+  })
+  .sort((a, b) => {
+    const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
+    const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    return timeB - timeA;
+  })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 核心修正 2：利用安全的 new Date + getTime 排序机制，彻底对齐 projects 集合
+// ✨ 终极安全修正 2：利用极致的显式防御机制，彻底解开 projects 集合在主页的死锁，把新作品完美放出来
 const allProjects = await getCollection("projects");
 const projects = allProjects
-  .filter(project => !project.data.draft && (project.data.lang === "cn" || !project.data.lang)) 
-  .sort((a, b) => new Date(b.data.date as any).getTime() - new Date(a.data.date as any).getTime()) 
+  .filter(project => {
+    const isDraft = project.data.draft === true;
+    const isCn = project.data.lang === "cn" || !project.data.lang;
+    return !isDraft && isCn;
+  })
+  .sort((a, b) => {
+    const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
+    const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    return timeB - timeA;
+  })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
 const allwork = (await getCollection("work"))

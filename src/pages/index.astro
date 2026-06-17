@@ -7,39 +7,39 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流：使用标准的 .valueOf() 进行原生 Date 类型的时间戳相减排序
+// ✨ 1. 博客流：采用最稳固的排除法白名单，只要不明确是草稿和外语，统统放行撑开首页
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
     const isDraft = post.data.draft === true;
-    const lang = post.data.lang || "";
-    const isForeign = lang === "en" || lang === "de" || lang === "fr";
+    const currentLang = post.data.lang || "";
+    // 显式排除法，确保老内容和未分类内容不会被意外洗掉
+    const isForeign = currentLang === "en" || currentLang === "de" || currentLang === "fr";
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? b.data.date.valueOf() : 0;
-    const timeA = a.data.date ? a.data.date.valueOf() : 0;
-    return timeB - timeA;
+    const dateB = b.data.date ? b.data.date.valueOf() : 0;
+    const dateA = a.data.date ? a.data.date.valueOf() : 0;
+    return dateB - dateA;
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品灵感流：完美托举旧作品 1 与新作品 2（motherbook.md），直接安全防爆
+// ✨ 2. 作品灵感流：完美兼容旧作品 1 与独立命名空间下的新作品 2（motherbook.md）
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
     const isDraft = project.data.draft === true;
-    const lang = project.data.lang || "";
-    const isForeign = lang === "en" || lang === "de" || lang === "fr";
+    const currentLang = project.data.lang || "";
+    const isForeign = currentLang === "en" || currentLang === "de" || currentLang === "fr";
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? b.data.date.valueOf() : 0;
-    const timeA = a.data.date ? a.data.date.valueOf() : 0;
-    return timeB - timeA;
+    const dateB = b.data.date ? b.data.date.valueOf() : 0;
+    const dateA = a.data.date ? a.data.date.valueOf() : 0;
+    return dateB - dateA;
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
-// ✨ 3. 履历流保持原样
 const allwork = (await getCollection("work"))
   .sort((a, b) => {
     const getOrder = (id) => {

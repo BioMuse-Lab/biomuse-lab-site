@@ -7,7 +7,7 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流绝对防御：利用最高级别兼容性提取时间戳，严防 NaN 引发渲染塌陷
+// ✨ 1. 博客流绝对防御：使用标准的 .valueOf() 进行原生 Date 类型的时间戳排序
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
@@ -17,13 +17,13 @@ const blog = allBlogs
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    const timeB = b.data.date ? b.data.date.valueOf() : 0;
+    const timeA = a.data.date ? a.data.date.valueOf() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品流绝对防御：彻底抹平 optional 造成的类型偏差，把新作品 2 强行释放到前台
+// ✨ 2. 作品灵感流绝对防御：彻底抹平 optional 造成的类型偏差，平滑放出新作品 2
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
@@ -33,13 +33,13 @@ const projects = allProjects
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    const timeB = b.data.date ? b.data.date.valueOf() : 0;
+    const timeA = a.data.date ? a.data.date.valueOf() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
-// ✨ 3. 履历流安全排序
+// ✨ 3. 履历流安全过滤与排序
 const allwork = (await getCollection("work"))
   .sort((a, b) => {
     const getOrder = (id) => {
@@ -56,107 +56,13 @@ const allwork = (await getCollection("work"))
 
 const work = await Promise.all(
   allwork.map(async (item) => {
-    const { Content } = await item.render();
-    return { ...item, Content };
+    // 加装运行时保底，防止由于单篇履历损坏导致整张首页被强杀
+    try {
+      const { Content } = await item.render();
+      return { ...item, Content };
+    } catch (e) {
+      return { ...item, Content: null };
+    }
   })
 );
 ---
-
-<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
-  <Container>
-    <h4 class="animate font-semibold text-black dark:text-white">
-      就在此处，见无暇顾及 <span class="text-xl">👋🏻</span> 
-    </h4>
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <p class="animate">一名没有形状的女子，目前在上海一家生物公司探索中</p>
-          <p class="animate">
-            将整个生命历程视为创作作品，持续的进行持续的流动。在文字中书写一切可书写的，在播客音频中言说坦诚真实的，在生命科学领域中记录职业心得与科研思路。
-            构建一个连接“感性创作”与“理性实验”的共振实验室。
-          </p>
-          <p class="animate">
-            <strong style="font-style: italic;">万物穿身而过，我将其悉数入瓮。</strong> 文字、科研与艺术，皆是相通的承载形式，也是这具容器里持续流动的生命痕迹。欢迎来到我的数字堡垒，我们一起在人间好好玩耍吧。
-          </p>
-        </article>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">近期文章</h5>
-          <Link href="/blog">查看全部</Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {blog && blog.map(post => (
-            <li>
-              <ArrowCard entry={post} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">职业履历</h5>
-          <Link href="/work">查看全部</Link>
-        </div>
-        <ul class="flex flex-col space-y-4">
-          {work && work.map(entry => (
-            <li>
-              <div class="text-sm opacity-75">
-                {entry.data && dateRange(entry.data.dateStart, entry.data.dateEnd)}
-              </div>
-              <div class="font-semibold text-black dark:text-white">
-                {entry.data && entry.data.company}
-              </div>
-              <div class="text-sm opacity-75">
-                {entry.data && entry.data.role}
-              </div>
-              {entry.Content ? (
-                <article>
-                  <entry.Content />
-                </article>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">灵感作品</h5>
-          <Link href="/projects">See all projects</Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {projects && projects.map(project => (
-            <li>
-              <ArrowCard entry={project} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-4">
-        <h5 class="font-semibold text-black dark:text-white">让我们彼此触达</h5>
-        <article>
-          <p>万物穿身而过，就在此处。如果你想知道更多，或者想和我聊聊任何想法，或者单纯打个招呼，欢迎通过以下方式触达。（点击下方可跳转）</p>
-        </article>
-        <ul class="flex flex-wrap gap-2">
-          {SOCIALS && SOCIALS.map(SOCIAL => (
-            <li class="flex gap-x-2 text-nowrap">
-              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
-                {SOCIAL.NAME}
-              </Link>
-              {"/"}
-            </li>
-          ))}
-          <li class="line-clamp-1">
-            <Link href={`mailto:${SITE.EMAIL}`} aria-label={`Email ${SITE.NAME}`}>
-              {SITE.EMAIL}
-            </Link>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </Container>
-</PageLayout>

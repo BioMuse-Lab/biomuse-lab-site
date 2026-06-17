@@ -8,7 +8,8 @@ import ArrowCard from "@components/ArrowCard.astro";
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => project.data.lang === "fr")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  // ✨ 核心修正：使用数字减法或 getTime() 确保原生 Date 类型比较的安全
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <PageLayout title="Projets" description="Une collection d'idées créatives et de travaux.">

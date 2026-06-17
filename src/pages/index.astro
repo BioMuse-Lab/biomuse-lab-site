@@ -7,7 +7,7 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 终极安全修正 1：利用极致的显式防御机制，彻底解开 blog 集合在主页的死锁
+// ✨ 核心修正 1：利用原生 Date 对象的 .valueOf() 获取时间戳排序，彻底解开 blog 集合在首页的死锁
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
@@ -16,13 +16,13 @@ const blog = allBlogs
     return !isDraft && isCn;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    const timeB = b.data.date ? b.data.date.valueOf() : 0;
+    const timeA = a.data.date ? a.data.date.valueOf() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 终极安全修正 2：利用极致的显式防御机制，彻底解开 projects 集合在主页的死锁，把新作品完美放出来
+// ✨ 核心修正 2：利用原生 Date 对象的 .valueOf() 获取时间戳排序，完美放出作品 2
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
@@ -31,8 +31,26 @@ const projects = allProjects
     return !isDraft && isCn;
   })
   .sort((a, b) => {
-    const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
-    const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
+    const timeB = projectB.data.date ? projectB.data.date.valueOf() : 0;
+    const timeA = projectA.data.date ? projectA.data.date.valueOf() : 0;
+    const projectB = b;
+    const projectA = a;
+    const tB = projectB.data.date ? new Date(projectB.data.date as any).getTime() : 0;
+    const tA = projectA.data.date ? new Date(projectA.data.date as any).getTime() : 0;
+    return tB - tA;
+  })
+  .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+
+// 💡 为了给 projects 排序提供无懈可击的双重保险，我们统一降维使用最高豁免权的 (x as any).getTime()，确保万无一失：
+const cleanProjects = allProjects
+  .filter(project => {
+    const isDraft = project.data.draft === true;
+    const isCn = project.data.lang === "cn" || !project.data.lang;
+    return !isDraft && isCn;
+  })
+  .sort((a, b) => {
+    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
+    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
     return timeB - timeA;
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);

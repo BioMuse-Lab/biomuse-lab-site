@@ -5,88 +5,160 @@ import PageLayout from "@layouts/PageLayout.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
-import { SITE, HOME, SOCIALS } from "@consts";
+import { SITE, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流绝对安全防御：确保空值不崩溃，保底空数组
+// 1. 博客流绝对安全防御
 let blog = [];
 try {
   const allBlogs = await getCollection("blog") || [];
   blog = allBlogs
-    .filter(post => {
-      if (!post || !post.data) return false;
-      const isDraft = post.data.draft === true;
-      const lang = post.data.lang || "";
-      // 宽容模式：只要不是明确的外语，统统放行，严防空值归零
-      const isForeign = lang === "en" || lang === "de" || lang === "fr";
-      return !isDraft && !isForeign;
-    })
-    .sort((a, b) => {
-      const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
-      const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
-      return timeB - timeA;
-    })
-    .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+    .filter(post => post && post.data && post.data.draft !== true && post.data.lang !== "en")
+    .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+    .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE || 3);
 } catch (e) {
-  console.error("首页博客流加载失败:", e);
+  console.error("Home blog failed:", e);
 }
 
-// ✨ 2. 作品流绝对安全防御：确保新老作品能被平滑托举显形
+// 2. 作品流绝对安全防御
 let projects = [];
 try {
   const allProjects = await getCollection("projects") || [];
   projects = allProjects
-    .filter(project => {
-      if (!project || !project.data) return false;
-      const isDraft = project.data.draft === true;
-      const lang = project.data.lang || "";
-      const isForeign = lang === "en" || lang === "de" || lang === "fr";
-      return !isDraft && !isForeign;
-    })
-    .sort((a, b) => {
-      const timeB = b.data.date ? new Date(b.data.date).getTime() : 0;
-      const timeA = a.data.date ? new Date(a.data.date).getTime() : 0;
-      return timeB - timeA;
-    })
-    .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+    .filter(p => p && p.data && p.data.draft !== true && p.data.lang !== "en")
+    .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+    .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE || 3);
 } catch (e) {
-  console.error("首页作品流加载失败:", e);
+  console.error("Home projects failed:", e);
 }
 
-// ✨ 3. 履历流绝对安全防御：彻底斩断可能导致 Promise.all 挂死的死锁源头
+// 3. 履历流绝对安全防御
 let work = [];
 try {
-  const allwork = (await getCollection("work") || [])
-    .sort((a, b) => {
-      const getOrder = (id) => {
-        if (!id) return 99;
-        const lowerId = id.toLowerCase();
-        if (lowerId.includes('bioligo')) return 1;
-        if (lowerId.includes('ecust')) return 2;
-        if (lowerId.includes('starbarks')) return 3;
-        if (lowerId.includes('mcn')) return 4;
-        return 99;
-      };
-      return getOrder(a.id) - getOrder(b.id);
-    })
-    .slice(0, SITE.NUM_WORKS_ON_HOMEPAGE);
+  const allwork = await getCollection("work") || [];
+  const sortedWork = allwork.sort((a, b) => {
+    const getOrder = (id) => {
+      if (!id) return 99;
+      const lowerId = id.toLowerCase();
+      if (lowerId.includes('bioligo')) return 1;
+      if (lowerId.includes('ecust')) return 2;
+      return 99;
+    };
+    return getOrder(a.id) - getOrder(b.id);
+  }).slice(0, SITE.NUM_WORKS_ON_HOMEPAGE || 3);
 
   work = await Promise.all(
-    allwork.map(async (item) => {
+    sortedWork.map(async (item) => {
       try {
-        // 使用 Promise.race 阻止单篇异常履历无限期挂起整张页面
-        const renderPromise = item.render();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error("Render timeout")), 2000)
-        );
-        const { Content } = await Promise.race([renderPromise, timeoutPromise]) as any;
+        const { Content } = await item.render();
         return { ...item, Content };
       } catch (e) {
-        console.warn(`单篇履历渲染跳过 [${item.id}]:`, e);
-        return { ...item, Content: null }; // 保底渲染，防止强杀首页
+        return { ...item, Content: null };
       }
     })
   );
 } catch (e) {
-  console.error("首页履历流加载失败:", e);
+  console.error("Home work failed:", e);
 }
 ---
+
+<PageLayout title="就在此处" description="个人数字堡垒">
+  <Container>
+    <div style="display: block !important; opacity: 1 !important; visibility: visible !important;" class="space-y-16">
+      
+      <section style="display: block !important;">
+        <article class="space-y-4">
+          <h4 class="font-semibold text-black dark:text-white text-xl">
+            就在此处，见无暇顾及 👋🏻
+          </h4>
+          <p>一名没有形状的女子，目前在上海一家生物公司探索中</p>
+          <p>
+            将整个生命历程视为创作作品，持续的进行持续的流动。在文字中书写一切可书写的，在播客音频中言说坦诚真实的，在生命科学领域中记录职业心得与科研思路。
+            构建一个连接“感性创作”与“理性实验”的共振实验室。
+          </p>
+          <p>
+            <strong style="font-style: italic;">万物穿身而过，我将其悉数入瓮。</strong> 文字、科研与艺术，皆是相通的承载形式，也是这具容器里持续流动的生命痕迹。欢迎来到我的数字堡垒，我们一起在人间好好玩耍吧。
+          </p>
+        </article>
+      </section>
+
+      {blog && blog.length > 0 && (
+        <section class="space-y-6">
+          <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <h5 class="font-semibold text-black dark:text-white">近期文章</h5>
+            <Link href="/blog">查看全部</Link>
+          </div>
+          <ul class="flex flex-col gap-4">
+            {blog.map(post => (
+              <li>
+                <ArrowCard entry={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {work && work.length > 0 && (
+        <section class="space-y-6">
+          <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <h5 class="font-semibold text-black dark:text-white">职业履历</h5>
+            <Link href="/work">查看全部</Link>
+          </div>
+          <ul class="flex flex-col space-y-4">
+            {work.map(entry => (
+              <li>
+                <div class="text-sm opacity-75">
+                  {entry.data && dateRange(entry.data.dateStart, entry.data.dateEnd)}
+                </div>
+                <div class="font-semibold text-black dark:text-white">
+                  {entry.data && entry.data.company}
+                </div>
+                <div class="text-sm opacity-75">
+                  {entry.data && entry.data.role}
+                </div>
+                {entry.Content && (
+                  <article>
+                    <entry.Content />
+                  </article>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {projects && projects.length > 0 && (
+        <section class="space-y-6">
+          <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <h5 class="font-semibold text-black dark:text-white">灵感作品</h5>
+            <Link href="/projects">See all projects</Link>
+          </div>
+          <ul class="flex flex-col gap-4">
+            {projects.map(project => (
+              <li>
+                <ArrowCard entry={project} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section class="space-y-4">
+        <h5 class="font-semibold text-black dark:text-white">让我们彼此触达</h5>
+        <article>
+          <p>万物穿身而过，就在此处。如果你想知道更多，或者想和我聊聊任何想法，或者单纯打个招呼，欢迎通过以下方式触达。（点击下方可跳转）</p>
+        </article>
+        <ul class="flex flex-wrap gap-2">
+          {SOCIALS && SOCIALS.map(SOCIAL => (
+            <li class="flex gap-x-2 text-nowrap">
+              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
+                {SOCIAL.NAME}
+              </Link>
+              {"/"}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+    </div>
+  </Container>
+</PageLayout>

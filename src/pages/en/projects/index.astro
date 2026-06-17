@@ -5,7 +5,7 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
 // ✨ 核心数据流：读取真实的本地集合 'ideagallery'，并精准过滤出当前语种
-const allProjects = await getCollection("ideagallery");
+const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => project.data.lang === "en")
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());

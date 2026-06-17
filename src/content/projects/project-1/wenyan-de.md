@@ -1,7 +1,12 @@
 ---
 title: "Spiegel und Anker"
-description: "Sie äußerte ihre Besorgnis. Für sie sind andere Menschen klar und berechenbar; sie kann deren Lebensweg im Allgemeinen vorhersehen. Aber bei mir sieht sie einen Nebel, eine Unvorhersehbarkeit. 'Aber das macht doch überhaupt nichts, Frau Professor', sagte ich."
+description: >
+  Sie äußerte ihre Besorgnis. Für sie sind andere Menschen klar und berechenbar; sie kann deren Lebensweg grob vorhersehen. Aber bei mir sieht sie Nebel und Unvorhersehbarkeit. Meine Denk- und Ausdrucksweise ist anders, sodass sie nicht weiß, wohin ich fließen werde. "Aber das ist völlig in Ordnung, Frau Professor!", sagte ich.
 date: "2026-06-12"
+Wechat URL: "https://mp.weixin.qq.com/s/FEnq4URF1uw6c0-oFbc9qQ"
+drawer: "/images/612鱼.jpg"
+lang: "de"
+tags: ["Inspirationen"]
 ---
 
 ![Eine Frau ohne Form](/images/banner.png)

@@ -3,33 +3,40 @@ import Container from "@components/Container.astro";
 import Link from "@components/Link.astro";
 import { SITE } from "@consts";
 
-// ✨ 核心逻辑 1：捕获当前绝对路径，提取语言标识和纯路由
+// 1. 获取当前绝对路径，并彻底清洗空字符
 const pathname = Astro.url.pathname;
-const segments = pathname.split('/').filter(Boolean); // 例如：['en', 'projects'] 或 ['projects']
+const segments = pathname.split('/').filter(Boolean);
 
-// 判断当前所处语言
+// 2. 判定当前语言场域
 const currentLang = ['en', 'de', 'fr'].includes(segments[0]) ? segments[0] : 'cn';
 
-// 获取去掉语言前缀后的纯页面路由（例如：'projects'、'blog' 或 ''）
-const pureRoute = ['en', 'de', 'fr'].includes(segments[0]) ? segments.slice(1).join('/') : segments.join('/');
+// 3. 精准提取出纯粹的栏目内核（抹去语言前缀和末尾杂质）
+let pureRoute = '';
+if (['en', 'de', 'fr'].includes(segments[0])) {
+  pureRoute = segments.slice(1).join('/');
+} else {
+  pureRoute = segments.join('/');
+}
+// 确保 pureRoute 不会变成 'projects/'，保持干净的字符内核
+pureRoute = pureRoute.replace(/\/$/, '');
 
-// ✨ 核心逻辑 2：动态计算语言切换按钮的跳转路径
+// 4. ✨ 核心修正：动态计算语言切换路径（强制补齐末尾斜杠防止 404）
 function getLocalizedPath(targetLang: string) {
   if (targetLang === 'cn') {
-    return pureRoute ? `/${pureRoute}` : '/';
+    return pureRoute ? `/${pureRoute}/` : '/';
   }
-  return pureRoute ? `/${targetLang}/${pureRoute}` : `/${targetLang}`;
+  return pureRoute ? `/${targetLang}/${pureRoute}/` : `/${targetLang}/`;
 }
 
-// ✨ 核心逻辑 3：动态计算各个栏目在当前语言环境下的正确路径
+// 5. ✨ 核心修正：动态计算菜单栏目路径（强制补齐末尾斜杠）
 function getMenuPath(menu: string) {
   if (currentLang === 'cn') {
-    return `/${menu}`;
+    return `/${menu}/`;
   }
-  return `/${currentLang}/${menu}`;
+  return `/${currentLang}/${menu}/`;
 }
 
-// ✨ 根据语言定义导航文字
+// 根据语言定义导航文字
 const nav = {
   blog: currentLang === 'en' ? "Blog" : currentLang === 'de' ? "Blog" : currentLang === 'fr' ? "Blog" : "文章",
   work: currentLang === 'en' ? "Work" : currentLang === 'de' ? "Arbeit" : currentLang === 'fr' ? "Expériences" : "工作学习",

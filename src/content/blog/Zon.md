@@ -1,8 +1,8 @@
 ---
 title: "我希望她们生育之后依旧舞动，我希望他们/她们的发色在30＋/40＋/50＋的年纪依旧是蓝色/紫的/红色"
 description: "故而最开始文章标题是我希望她们生育之后依旧舞动，我希望她们的发色在30＋/40＋/50＋依旧是蓝色/紫的/红色。在我想到这位穿着背心身材健硕的40＋男性以及舞房老板John的时候，我想要将她们改成他们和她们。"
-date: "2026-06-07"
-drawer: "/images/shehe1.png"
+date: "2026-06-17"
+drawer: "/images/Zone.jpg"
 lang: "cn"
 tags: ["人类样本收集器"]
 ---
@@ -11,7 +11,7 @@ tags: ["人类样本收集器"]
 就在此处，见**无暇顾及**👋🏻。
 
 ---
-<img src="/images/shehe1.png" width="60%" style="display: block; margin: 0 auto;" />
+<img src="/images/Zone.jpg" width="60%" style="display: block; margin: 0 auto;" />
                
 > **故而最开始文章标题是我希望她们生育之后依旧舞动，我希望她们的发色在30＋/40＋/50＋依旧是蓝色/紫的/红色。
 在我想到这位穿着背心身材健硕的40＋男性以及舞房老板John的时候，我想要将她们改成他们和她们。**

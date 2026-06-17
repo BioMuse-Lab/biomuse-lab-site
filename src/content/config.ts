@@ -23,18 +23,18 @@ const work = defineCollection({
   }),
 });
 
-// ✨ 顶流防御性 Schema：去掉中文键名，全部字段追加 .optional()，彻底封锁报错
+// ✨ 终极咬合 Schema：date 字段统一规范为标准的 coerce.date()，扩展属性全部设为可选兼容
 const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    date: z.coerce.date(),
+    date: z.coerce.date(),               // 👈 必须是严格的日期强制转换规则
     draft: z.boolean().optional(),
     drawer: z.string().optional(),
     lang: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    wechatURL: z.string().optional(), // 👈 统一改成合规的英文键名
+    wechatURL: z.string().optional(),
     demoURL: z.string().optional(),
     repoURL: z.string().optional(),
   }),

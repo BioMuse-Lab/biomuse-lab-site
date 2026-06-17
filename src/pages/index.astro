@@ -7,14 +7,18 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-const blog = (await getCollection("blog"))
+// ✨ 修正 1：升级文章（blog）的排序逻辑，改用原生的 .getTime() 彻底抹平类型差
+const allBlogs = await getCollection("blog");
+const blog = allBlogs
   .filter(post => !post.data.draft && (post.data.lang === "cn" || !post.data.lang))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .sort((a, b) => new Date(b.data.date as any).getTime() - new Date(a.data.date as any).getTime())
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-const projects = (await getCollection("projects"))
+// ✨ 修正 2：同步升级作品（projects）的排序逻辑，改用最高防御级别的 .getTime()
+const allProjects = await getCollection("projects");
+const projects = allProjects
   .filter(project => !project.data.draft && (project.data.lang === "cn" || !project.data.lang)) 
-  .sort((a, b) => b.data.date.localeCompare(a.data.date)) 
+  .sort((a, b) => new Date(b.data.date as any).getTime() - new Date(a.data.date as any).getTime()) 
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
 const allwork = (await getCollection("work"))
@@ -37,7 +41,6 @@ const work = await Promise.all(
     return { ...item, Content };
   })
 );
-
 ---
 
 <PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>

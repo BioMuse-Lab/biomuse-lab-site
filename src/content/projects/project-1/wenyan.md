@@ -3,7 +3,7 @@ title: "镜子与锚点"
 description: >
   她表明了担忧。她看其他人是清楚的/可预测的，大概能够知道他们今后的人生走向，但是在我这边她是不清楚的，她看我是有雾气的/不可预测的，同时我的思考方式和表达方式不太一样，你不知道我今后会流向何方。“但是没有关系的啦！老师”我说。
 date: "2026-06-12"
-微信公众号URL: "https://mp.weixin.qq.com/s/FEnq4URF1uw6c0-oFbc9qQ"
+wechatURL: "https://mp.weixin.qq.com/s/FEnq4URF1uw6c0-oFbc9qQ"
 drawer: "/images/612鱼.jpg"
 lang: "cn"
 tags: ["灵感作品"]

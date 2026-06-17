@@ -3,18 +3,20 @@ import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import { dateRange } from "@lib/utils";
-import { WORK } from "@consts";
-import BackToPrev from "@components/BackToPrev.astro"; // 1. 补上缺失的引用
 
-const collection = (await getCollection("work"))
-  .sort((a, b) => new Date(b.data.dateStart).valueOf() - new Date(a.data.dateStart).valueOf());
-
-const work = await Promise.all(
-  collection.map(async (item) => {
-    const { Content } = await item.render();
-    return { ...item, Content };
+// 🇨🇳 中文版：只抓取原生的、不带海外后缀的纯中文文件
+const allwork = await getCollection("work") || [];
+const work = allwork
+  .filter(item => {
+    if (!item || !item.id) return false;
+    const id = String(item.id).toLowerCase();
+    // 明确排除带有 -en, -de, -fr 后缀的海外翻译文件
+    return !id.endsWith("-en") && !id.endsWith("-de") && !id.endsWith("-fr");
   })
-);
+  .sort((a, b) => {
+    // 按文件名开头的数字 01, 02 排序
+    return String(a.id).localeCompare(String(b.id));
+  });
 ---
 
 <PageLayout title={WORK.TITLE} description={WORK.DESCRIPTION}>

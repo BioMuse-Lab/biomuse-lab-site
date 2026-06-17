@@ -7,36 +7,35 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流：采用最稳固的排除法白名单，只要不明确是草稿和外语，统统放行撑开首页
+// ✨ 1. 博客流绝对防御：利用最高级别兼容性提取时间戳，严防 NaN 引发渲染塌陷
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
     const isDraft = post.data.draft === true;
-    const currentLang = post.data.lang || "";
-    // 显式排除法，确保老内容和未分类内容不会被意外洗掉
-    const isForeign = currentLang === "en" || currentLang === "de" || currentLang === "fr";
+    const lang = post.data.lang || "";
+    const isForeign = lang === "en" || lang === "de" || lang === "fr";
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const dateB = b.data.date ? b.data.date.valueOf() : 0;
-    const dateA = a.data.date ? a.data.date.valueOf() : 0;
-    return dateB - dateA;
+    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
+    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    return timeB - timeA;
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品灵感流：完美兼容旧作品 1 与独立命名空间下的新作品 2（motherbook.md）
+// ✨ 2. 作品流绝对防御：彻底抹平 optional 造成的类型偏差，把新作品 2 强行释放到前台
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
     const isDraft = project.data.draft === true;
-    const currentLang = project.data.lang || "";
-    const isForeign = currentLang === "en" || currentLang === "de" || currentLang === "fr";
+    const lang = project.data.lang || "";
+    const isForeign = lang === "en" || lang === "de" || lang === "fr";
     return !isDraft && !isForeign;
   })
   .sort((a, b) => {
-    const dateB = b.data.date ? b.data.date.valueOf() : 0;
-    const dateA = a.data.date ? a.data.date.valueOf() : 0;
-    return dateB - dateA;
+    const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
+    const timeA = a.data.date ? new Date(a.data.date as any).getTime() : 0;
+    return timeB - timeA;
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 

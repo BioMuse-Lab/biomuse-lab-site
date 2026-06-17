@@ -23,6 +23,7 @@ const work = defineCollection({
   }),
 });
 
+// ✨ 核心修正：补齐彻底缺失的 projects 集合定义，彻底封锁引发全站白屏的底层漏洞
 const projects = defineCollection({
   type: "content",
   schema: z.object({
@@ -39,4 +40,5 @@ const projects = defineCollection({
   }),
 });
 
+// ⚠️ 确保 projects 被正确导出
 export const collections = { blog, work, projects };

@@ -4,11 +4,16 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
-// ✨ 核心数据流：读取真实的本地集合 'ideagallery'，并精准过滤出当前语种
 const allProjects = await getCollection("projects");
+
+// ✨ 同步对齐：英文隔离流
 const projects = allProjects
-  .filter(project => project.data.lang === "en")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .filter(project => project.data.lang === "en") // 👈 锁定英文
+  .sort((a, b) => {
+    const timeB = new Date(b.data.date as any).getTime();
+    const timeA = new Date(a.data.date as any).getTime();
+    return timeB - timeA;
+  });
 ---
 
 <PageLayout title="Projects" description="A collection of creative ideas and works.">

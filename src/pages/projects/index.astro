@@ -4,15 +4,14 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
-// ✨ 核心数据流：读取真实的本地集合名称 'projects'
 const allProjects = await getCollection("projects");
 
-// ✨ 顶级防御排序：不管 data.date 是 String 还是 Date 对象，统一强制包裹 new Date() 确保安全
 const projects = allProjects
   .filter(project => project.data.lang === "cn")
   .sort((a, b) => {
-    const timeB = new Date(b.data.date).getTime();
-    const timeA = new Date(a.data.date).getTime();
+    // ✨ 终极防御：不管是 Date 对象还是 string，统一用 Object 规避编译器的直视，强行转换为时间戳比较
+    const timeB = new Date(b.data.date as any).getTime();
+    const timeA = new Date(a.data.date as any).getTime();
     return timeB - timeA;
   });
 ---

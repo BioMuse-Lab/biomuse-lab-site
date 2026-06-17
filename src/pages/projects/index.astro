@@ -6,10 +6,14 @@ import ArrowCard from "@components/ArrowCard.astro";
 
 const allProjects = await getCollection("projects");
 
-// ✨ 核心修正：直接使用标准的字符串局部对比（localeCompare），完美对齐主页和旧数据的 string 状态
+// ✨ 核心修正：放弃 localeCompare，用最高防御级别的 .getTime() 时间戳直接作差排序
 const projects = allProjects
-  .filter(project => project.data.lang === "cn")
-  .sort((a, b) => b.data.date.localeCompare(a.data.date)); 
+  .filter(project => project.data.lang === "cn") // 👈 英文页改成 "en" / 德文 "de" / 法文 "fr"
+  .sort((a, b) => {
+    const timeB = new Date(b.data.date as any).getTime();
+    const timeA = new Date(a.data.date as any).getTime();
+    return timeB - timeA;
+  });
 ---
 
 <PageLayout title="作品灵感" description="创造与实验的灵感集合。">

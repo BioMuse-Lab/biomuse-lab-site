@@ -9,16 +9,16 @@ import Link from "@components/Link.astro";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
-  
+
   const filteredProjects = projects
-    .filter(post => post.data.draft !== true) // ✨ 显式判断，防止 undefined 触发类型拦截
+    .filter(post => post.data.draft !== true) // 显式判断，防止 undefined 触发类型拦截
     .sort((a, b) => {
-      // ✨ 强制转换为时间戳进行安全排序，彻底清除 .valueOf() 隐患
       const timeB = new Date(b.data.date as any).getTime();
       const timeA = new Date(a.data.date as any).getTime();
       return timeB - timeA;
     });
 
+  // ✨ 核心修正：必须 return 处理完的 filteredProjects，保证静态路由数据链闭环
   return filteredProjects.map((project) => ({
     params: { slug: project.slug },
     props: project,

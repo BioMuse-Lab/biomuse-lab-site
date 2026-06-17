@@ -8,23 +8,14 @@ import BackToPrev from "@components/BackToPrev.astro";
 import Link from "@components/Link.astro";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
-  
-// ✨ 终极安全修正：将 .filter 校验降维打击，防止 undefined 引发 TypeScript 强杀构建
-  const filteredProjects = projects
-    .filter(post => post.data.draft !== true) // 👈 确保这里有且仅有一个右括号闭合 filter
-    .sort((a, b) => {
-      const timeB = new Date(b.data.date as any).getTime();
-      const timeA = new Date(a.data.date as any).getTime();
-      return timeB - timeA;
-    }); // 👈 确保 sort 的括号在这里闭合
-
-  return filteredProjects.map((project) => ({
+  const projects = (await getCollection("projects"))
+    .filter(post => !post.data.draft)
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  return projects.map((project) => ({
     params: { slug: project.slug },
     props: project,
   }));
 }
-
 type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;

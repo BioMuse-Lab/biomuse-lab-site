@@ -8,7 +8,7 @@ import ArrowCard from "@components/ArrowCard.astro";
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => project.data.lang === "fr")
-  // ✨ 核心修正：使用数字减法或 getTime() 确保原生 Date 类型比较的安全
+  // ✨ 核心修正：改用标准的 .getTime() 获取毫秒时间戳进行排序，彻底对齐 Date 类型
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 

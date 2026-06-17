@@ -1,7 +1,12 @@
 ---
 title: "Miroirs et Ancres"
-description: "Elle a exprimé son inquiétude. Pour elle, les autres sont clairs et prévisibles ; elle peut généralement prévoir leur trajectoire de vie. Mais avec moi, elle voit un brouillard, une imprévisibilité. « Mais cela n'a aucune importance, Professeur », ai-je dit."
+description: >
+  Elle a exprimé ses inquiétudes. Pour elle, les autres sont clairs et prévisibles ; elle sait où leur vie les mènera. Mais avec moi, c'est flou, brumeux. Mon mode de pensée et d'expression est différent. "Mais ce n'est pas grave, Professeure !", ai-je dit.
 date: "2026-06-12"
+Wechat URL: "https://mp.weixin.qq.com/s/FEnq4URF1uw6c0-oFbc9qQ"
+drawer: "/images/612鱼.jpg"
+lang: "fr"
+tags: ["Inspirations"]
 ---
 
 ![Une femme sans forme](/images/banner.png)

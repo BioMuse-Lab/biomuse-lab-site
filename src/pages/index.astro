@@ -7,7 +7,7 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流绝对防御：使用标准的 .valueOf() 进行原生 Date 类型的时间戳排序
+// 1. 博客流安全排序
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
@@ -23,7 +23,7 @@ const blog = allBlogs
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品灵感流绝对防御：彻底抹平 optional 造成的类型偏差，平滑放出新作品 2
+// 2. 作品灵感流绝对安全排序（完美托举新老作品显形）
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
@@ -39,7 +39,6 @@ const projects = allProjects
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
-// ✨ 3. 履历流安全过滤与排序
 const allwork = (await getCollection("work"))
   .sort((a, b) => {
     const getOrder = (id) => {
@@ -56,7 +55,6 @@ const allwork = (await getCollection("work"))
 
 const work = await Promise.all(
   allwork.map(async (item) => {
-    // 加装运行时保底，防止由于单篇履历损坏导致整张首页被强杀
     try {
       const { Content } = await item.render();
       return { ...item, Content };

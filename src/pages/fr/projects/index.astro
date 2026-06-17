@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+
+// ✨ 核心数据流：获取集合，并且只保留法文（lang: "fr"）的文章个体
+const projects = (await getCollection("projects"))
+  .filter(project => project.data.lang === "fr")
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<PageLayout title="Projets" description="Une collection d'idées créatives et de travaux.">
+  <Container>
+    <div class="space-y-10">
+      <div class="font-semibold text-black dark:text-white text-2xl animate">
+        Projets
+      </div>
+      
+      <ul class="flex flex-col gap-4 animate">
+        {
+          projects.map((project) => (
+            <li>
+              {/* 使用 you 现有的卡片组件渲染单篇文章个体 */}
+              <ArrowCard entry={project} />
+            </li>
+          ))
+        }
+      </ul>
+      
+      {projects.length === 0 && (
+        <p class="text-sm text-black/50 dark:text-white/50 italic animate">
+          Aucun projet pour le moment. Restez à l'écoute.
+        </p>
+      )}
+    </div>
+  </Container>
+</PageLayout>

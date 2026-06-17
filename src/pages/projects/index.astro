@@ -5,7 +5,7 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 
 // ✨ 核心修正 1：读取真实的本地集合名称 'ideagallery'
-const allProjects = await getCollection("ideagallery");
+const allProjects = await getCollection("projects");
 
 // ✨ 核心修正 2：加装语言隔离网，只保留中文（lang: "cn"）的文章个体
 const projects = allProjects

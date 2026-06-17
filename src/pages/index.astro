@@ -7,14 +7,14 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 修正 1：升级文章（blog）的排序逻辑，改用原生的 .getTime() 彻底抹平类型差
+// ✨ 核心修正 1：利用安全的 new Date + getTime 排序机制，彻底对齐 blog 集合
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => !post.data.draft && (post.data.lang === "cn" || !post.data.lang))
   .sort((a, b) => new Date(b.data.date as any).getTime() - new Date(a.data.date as any).getTime())
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 修正 2：同步升级作品（projects）的排序逻辑，改用最高防御级别的 .getTime()
+// ✨ 核心修正 2：利用安全的 new Date + getTime 排序机制，彻底对齐 projects 集合
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => !project.data.draft && (project.data.lang === "cn" || !project.data.lang)) 
@@ -42,118 +42,3 @@ const work = await Promise.all(
   })
 );
 ---
-
-<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
-  <Container>
-    <h4 class="animate font-semibold text-black dark:text-white">
-      就在此处，见无暇顾及 <span class="text-xl">👋🏻</span> 
-    </h4>
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <p class="animate">
-            一名没有形状的女子，目前在上海一家生物公司探索中
-          </p>
-          <p class="animate">
-            将整个生命历程视为创作作品，持续的进行持续的流动。在文字中书写一切可书写的，在播客音频中言说坦诚真实的，在生命科学领域中记录职业心得与科研思路。
-            构建一个连接“感性创作”与“理性实验”的共振实验室。
-          </p>
-          <p class="animate">
-            <strong style="font-style: italic;">万物穿身而过，我将其悉数入瓮。</strong> 文字、科研与艺术，皆是相通的承载形式，也是这具容器里持续流动的生命痕迹。欢迎来到我的数字堡垒，我们一起在人间好好玩耍吧。
-          </p>
-        </article>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            近期文章
-          </h5>
-          <Link href="/blog">
-            查看全部
-          </Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {blog.map(post => (
-            <li>
-              <ArrowCard entry={post} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            职业履历
-          </h5>
-          <Link href="/work">
-            查看全部
-          </Link>
-        </div>
-        <ul class="flex flex-col space-y-4">
-          {work.map(entry => (
-            <li>
-              <div class="text-sm opacity-75">
-                {dateRange(entry.data.dateStart, entry.data.dateEnd)}
-              </div>
-              <div class="font-semibold text-black dark:text-white">
-                {entry.data.company}
-              </div>
-              <div class="text-sm opacity-75">
-                {entry.data.role}
-              </div>
-              <article>
-                <entry.Content />
-              </article>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            灵感作品
-          </h5>
-          <Link href="/projects">
-            See all projects
-          </Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {projects.map(project => (
-            <li>
-              <ArrowCard entry={project} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="animate space-y-4">
-        <h5 class="font-semibold text-black dark:text-white">
-          让我们彼此触达
-        </h5>
-        <article>
-          <p>
-            万物穿身而过，就在此处。如果你想知道更多，或者想和我聊聊任何想法，或者单纯打个招呼，欢迎通过以下方式触达。（点击下方可跳转）
-          </p>
-        </article>
-        <ul class="flex flex-wrap gap-2">
-          {SOCIALS.map(SOCIAL => (
-            <li class="flex gap-x-2 text-nowrap">
-              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
-                {SOCIAL.NAME}
-              </Link>
-              {"/"}
-            </li>
-          ))}
-          <li class="line-clamp-1">
-            <Link href={`mailto:${SITE.EMAIL}`} aria-label={`Email ${SITE.NAME}`}>
-              {SITE.EMAIL}
-            </Link>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </Container>
-</PageLayout>

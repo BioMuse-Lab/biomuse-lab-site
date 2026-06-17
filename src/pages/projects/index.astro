@@ -3,18 +3,21 @@ import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
-import { PROJECTS } from "@consts";
 
-const projects = (await getCollection("projects"))
-  .filter(project => !project.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+// ✨ 核心修正 1：读取真实的本地集合名称 'ideagallery'
+const allProjects = await getCollection("ideagallery");
+
+// ✨ 核心修正 2：加装语言隔离网，只保留中文（lang: "cn"）的文章个体
+const projects = allProjects
+  .filter(project => project.data.lang === "cn")
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
-<PageLayout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
+<PageLayout title="作品灵感" description="创造与实验的灵感集合。">
   <Container>
     <div class="space-y-10">
-      <div class="animate font-semibold text-black dark:text-white">
-        Projects
+      <div class="animate font-semibold text-black dark:text-white text-2xl">
+        作品灵感
       </div>
       <ul class="animate flex flex-col gap-4">
         {
@@ -25,6 +28,12 @@ const projects = (await getCollection("projects"))
           ))
         }
       </ul>
+      
+      {projects.length === 0 && (
+        <p class="text-sm text-black/50 dark:text-white/50 italic animate">
+          暂无作品灵感。尽请期待。
+        </p>
+      )}
     </div>
   </Container>
 </PageLayout>

@@ -8,14 +8,23 @@ import BackToPrev from "@components/BackToPrev.astro";
 import Link from "@components/Link.astro";
 
 export async function getStaticPaths() {
-  const projects = (await getCollection("projects"))
-    .filter(post => !post.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  return projects.map((project) => ({
+  const projects = await getCollection("projects");
+  
+  const filteredProjects = projects
+    .filter(post => post.data.draft !== true) // ✨ 显式判断，防止 undefined 触发类型拦截
+    .sort((a, b) => {
+      // ✨ 强制转换为时间戳进行安全排序，彻底清除 .valueOf() 隐患
+      const timeB = new Date(b.data.date as any).getTime();
+      const timeA = new Date(a.data.date as any).getTime();
+      return timeB - timeA;
+    });
+
+  return filteredProjects.map((project) => ({
     params: { slug: project.slug },
     props: project,
   }));
 }
+
 type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;

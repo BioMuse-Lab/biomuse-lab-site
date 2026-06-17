@@ -10,7 +10,7 @@ const allProjects = await getCollection("projects");
 // ✨ 核心修正 2：加装语言隔离网，只保留中文（lang: "cn"）的文章个体
 const projects = allProjects
   .filter(project => project.data.lang === "cn")
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <PageLayout title="作品灵感" description="创造与实验的灵感集合。">

@@ -8,14 +8,23 @@ import BackToPrev from "@components/BackToPrev.astro";
 import Link from "@components/Link.astro";
 
 export async function getStaticPaths() {
-  const projects = (await getCollection("projects"))
+  const projects = await getCollection("projects");
+  
+  // ✨ 核心修正：使用最高防御级别的排序，彻底抹除 .valueOf() 的类型硬伤
+  const filteredProjects = projects
     .filter(post => !post.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  return projects.map((project) => ({
+    .sort((a, b) => {
+      const timeB = new Date(b.data.date as any).getTime();
+      const timeA = new Date(a.data.date as any).getTime();
+      return timeB - timeA;
+    });
+
+  return filteredProjects.map((project) => ({
     params: { slug: project.slug },
     props: project,
   }));
 }
+
 type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;

@@ -13,6 +13,7 @@ const blog = defineCollection({
   }),
 });
 
+// ✨ 统一代码操作：在 work 集合的底座中，正式拓宽 lang 字段的安全校验
 const work = defineCollection({
   type: "content",
   schema: z.object({
@@ -20,10 +21,10 @@ const work = defineCollection({
     role: z.string(),
     dateStart: z.coerce.date(),
     dateEnd: z.union([z.coerce.date(), z.string()]),
+    lang: z.string().optional(), // 👈 核心保底网：放行多语言属性访问
   }),
 });
 
-// ✨ 核心修正：补齐彻底缺失的 projects 集合定义，彻底封锁引发全站白屏的底层漏洞
 const projects = defineCollection({
   type: "content",
   schema: z.object({
@@ -40,7 +41,4 @@ const projects = defineCollection({
   }),
 });
 
-// ⚠️ 确保 projects 被正确导出
 export const collections = { blog, work, projects };
-
-

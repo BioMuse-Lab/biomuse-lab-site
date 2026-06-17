@@ -7,13 +7,14 @@ import Link from "@components/Link.astro";
 import { dateRange } from "@lib/utils";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-// ✨ 1. 博客流安全清洗排序
+// ✨ 1. 博客流：只要不是草稿，且没有显式标明是外语（en/de/fr），一律作为中文主轴在首页放出
 const allBlogs = await getCollection("blog");
 const blog = allBlogs
   .filter(post => {
     const isDraft = post.data.draft === true;
-    const isCn = post.data.lang === "cn" || !post.data.lang;
-    return !isDraft && isCn;
+    const lang = post.data.lang || "";
+    const isForeign = lang === "en" || lang === "de" || lang === "fr";
+    return !isDraft && !isForeign;
   })
   .sort((a, b) => {
     const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
@@ -22,13 +23,14 @@ const blog = allBlogs
   })
   .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// ✨ 2. 作品灵感流安全清洗排序（彻底移除未定义变量，确保作品 2 完美放出）
+// ✨ 2. 作品灵感流：完美兼容旧作品 1 与新作品 2（motherbook.md），直接前台放行
 const allProjects = await getCollection("projects");
 const projects = allProjects
   .filter(project => {
     const isDraft = project.data.draft === true;
-    const isCn = project.data.lang === "cn" || !project.data.lang;
-    return !isDraft && isCn;
+    const lang = project.data.lang || "";
+    const isForeign = lang === "en" || lang === "de" || lang === "fr";
+    return !isDraft && !isForeign;
   })
   .sort((a, b) => {
     const timeB = b.data.date ? new Date(b.data.date as any).getTime() : 0;
@@ -37,7 +39,7 @@ const projects = allProjects
   })
   .slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
 
-// ✨ 3. 工作履历流安全清洗排序
+// ✨ 3. 工作履历流保持原样
 const allwork = (await getCollection("work"))
   .sort((a, b) => {
     const getOrder = (id) => {

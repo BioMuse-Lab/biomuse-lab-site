@@ -4,6 +4,12 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import { dateRange } from "@lib/utils";
 
+// 🇨🇳 中文版页面元数据配置
+const WORK = {
+  TITLE: "工作与学习履历",
+  DESCRIPTION: "在生命科学领域的职业心得、销售沉淀与科研思路，构建感性创作与理性实验的共振实验室。"
+};
+
 // 🇨🇳 中文版：只抓取原生的、不带海外后缀的纯中文文件
 const allwork = await getCollection("work") || [];
 const work = allwork
@@ -30,10 +36,6 @@ const work = allwork
           </svg>
           <span class="text-sm">返回主页</span>
         </a>
-
-        <BackToPrev href="/">
-          Back to Home
-        </BackToPrev>
       </div>
 
       <ul class="flex flex-col space-y-8">

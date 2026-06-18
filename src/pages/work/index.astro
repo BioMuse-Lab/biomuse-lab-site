@@ -10,25 +10,61 @@ const WORK = {
   DESCRIPTION: "在生命科学领域的职业心得、销售沉淀与科研思路，构建感性创作与理性实验的共振实验室。"
 };
 
-// 🇨🇳 中文版：极其严格的兜底清洗过滤
+// 🇨🇳 中文版：智能放行不带海外后缀的原生文件（01-bioligo, 02-ecnu）
 const allwork = await getCollection("work") || [];
 const work = allwork
   .filter(item => {
-    // 物理防爆层：如果文件对象不存在、或者核心 id 缺失，直接安全剔除，绝不引发编译坍塌
     if (!item || !item.id) return false;
-    
     const id = String(item.id).toLowerCase();
     
-    // 明确排除带有 -en, -de, -fr 后缀的海外翻译文件
-    const isEnglish = id.endsWith("-en");
-    const isGerman = id.endsWith("-de");
-    const isFrench = id.endsWith("-fr");
+    // 物理隔离：只要文件名结尾带有海外语种后缀（-en / -de / -fr），一律剔除
+    if (id.endsWith("-en") || id.endsWith("-de") || id.endsWith("-fr")) {
+      return false;
+    }
     
-    return !isEnglish && !isGerman && !isFrench;
+    // 物理放行：你当前标准的 `01-bioligo` 和 `02-ecnu` 会完美通过这里
+    return true;
   })
   .sort((a, b) => {
     if (!a || !b || !a.id || !b.id) return 0;
-    // 按文件名开头的数字 01, 02 排序
+    // 按文件名开头的数字 01, 02 升序排列
     return String(a.id).localeCompare(String(b.id));
   });
 ---
+
+<PageLayout title={WORK.TITLE} description={WORK.DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate flex gap-2">
+        <a href="/" class="relative group w-fit flex items-center gap-1.5 px-3 py-1.5 rounded border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 ease-in-out text-black dark:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform duration-300 ease-in-out">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span class="text-sm">返回主页</span>
+        </a>
+      </div>
+
+      <ul class="flex flex-col space-y-8">
+        {
+          work.map(entry => (
+            <li class="animate space-y-2">
+              <div class="text-sm opacity-75">
+                {dateRange(entry.data.dateStart, entry.data.dateEnd)}
+              </div>
+              <div class="font-semibold text-black dark:text-white">
+                {entry.data.company}
+              </div>
+              <div class="text-sm opacity-75 font-medium">
+                {entry.data.role}
+              </div>
+              <article class="prose dark:prose-invert">
+                <entry.Content />
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</PageLayout>

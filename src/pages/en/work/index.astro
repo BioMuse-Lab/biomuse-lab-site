@@ -4,15 +4,31 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import { dateRange } from "@lib/utils";
 
-// 🇬🇧 英文版：只精准抓取文件名以 -en 结尾的履历文件
+// 🇬🇧 英文版：强效穿透并安全解析所有英文履历资产
 const allwork = await getCollection("work") || [];
-const work = allwork
+
+const filteredWork = allwork
   .filter(item => {
-    if (!item || !item.id) return false;
-    // 强行匹配我们在 GitHub 里创建的 -en 后缀文件
-    return String(item.id).toLowerCase().endsWith("-en");
+    if (!item || !item.id || !item.data) return false;
+    
+    // 💡 兼容性过滤：只要 Frontmatter 的 lang 标签为 en，或者文件名包含 -en 或 en 目录，一律放行
+    const idLower = String(item.id).toLowerCase();
+    const hasEnLabel = item.data.lang === "en" || idLower.includes("-en") || idLower.includes("/en/");
+    return hasEnLabel;
   })
-  .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  .sort((a, b) => {
+    // 按照入职或项目时间进行倒序排列（最新经历在前）
+    if (!a.data.dateStart || !b.data.dateStart) return 0;
+    return new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime();
+  });
+
+// 💡 核心修复：在顶部脚本区提前把所有的异步 Content 组件全部 render 出来！
+const workWithContent = await Promise.all(
+  filteredWork.map(async (entry) => {
+    const { Content } = await entry.render();
+    return { entry, Content };
+  })
+);
 ---
 
 <PageLayout title="Experiences" description="My professional journey.">
@@ -21,10 +37,10 @@ const work = allwork
       <div class="animate font-semibold text-black dark:text-white text-2xl">
         Experiences
       </div>
-      <ul class="flex flex-col space-y-4 animate">
-        {work.map(async (entry) => {
-          const { Content } = await entry.render();
-          return (
+      
+      {workWithContent.length > 0 ? (
+        <ul class="flex flex-col space-y-4 animate">
+          {workWithContent.map(({ entry, Content }) => (
             <li class="border-b border-black/10 dark:border-white/10 pb-4">
               <div class="text-sm opacity-75">
                 {dateRange(entry.data.dateStart, entry.data.dateEnd)}
@@ -36,12 +52,15 @@ const work = allwork
                 {entry.data.role}
               </div>
               <article class="prose dark:prose-invert max-w-none text-sm mt-3">
+                {/* 💡 此时 Content 已经是纯净、可直接渲染的标签组件，不再需要 await */}
                 <Content />
               </article>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-sm italic text-black/40 dark:text-white/40">Tracks are being integrated into the vessel...</p>
+      )}
     </div>
   </Container>
 </PageLayout>

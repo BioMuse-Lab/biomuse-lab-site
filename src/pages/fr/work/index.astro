@@ -4,25 +4,25 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import { dateRange } from "@lib/utils";
 
-// 🇩🇪 德文版：强效穿透并安全解析所有德文履历资产
+// 🇫🇷 Version Française : Extraction et analyse sécurisées de tous les actifs de parcours professionnels en français
 const allwork = await getCollection("work") || [];
 
 const filteredWork = allwork
   .filter(item => {
     if (!item || !item.id || !item.data) return false;
     
-    // 💡 兼容性过滤：只要 Frontmatter 的 lang 标签为 de，或者文件名包含 -de 或 de 目录，一律安全放行
+    // 💡 Filtrage de compatibilité : Autoriser si la balise lang est "fr", ou si le nom du fichier contient "-fr" ou le dossier "/fr/"
     const idLower = String(item.id).toLowerCase();
     const hasFrLabel = item.data.lang === "fr" || idLower.includes("-fr") || idLower.includes("/fr/");
-    return hasDeLabel;
+    return hasFrLabel;
   })
   .sort((a, b) => {
-    // 按照时间倒序排列（最新经历在前）
+    // Tri par ordre chronologique inverse (les expériences les plus récentes en premier)
     if (!a.data.dateStart || !b.data.dateStart) return 0;
     return new Date(b.data.dateStart).getTime() - new Date(a.data.dateStart).getTime();
   });
 
-// 💡 核心修复：在顶部脚本区提前把所有的异步 Content 组件全部 render 出来，移出 HTML 循环体
+// 💡 Correctif Core : Pré-rendre tous les composants asynchrones Content dans la zone de script supérieure
 const workWithContent = await Promise.all(
   filteredWork.map(async (entry) => {
     const { Content } = await entry.render();
@@ -31,11 +31,11 @@ const workWithContent = await Promise.all(
 );
 ---
 
-<PageLayout title="Berufserfahrung" description="Mein beruflicher Werdegang.">
+<PageLayout title="Parcours Professionnel" description="Mon parcours professionnel et mes expériences de vie.">
   <Container>
     <div class="space-y-10">
       <div class="animate font-semibold text-black dark:text-white text-2xl">
-        Berufserfahrung
+        Parcours Professionnel
       </div>
       
       {workWithContent.length > 0 ? (
@@ -52,14 +52,14 @@ const workWithContent = await Promise.all(
                 {entry.data.role}
               </div>
               <article class="prose dark:prose-invert max-w-none text-sm mt-3">
-                {/* 💡 此时 Content 已经是纯净、可直接渲染的标签组件 */}
+                {/* 💡 À ce stade, Content est un composant de balise pur et directement rendu */}
                 <Content />
               </article>
             </li>
           ))}
         </ul>
       ) : (
-        <p class="text-sm italic text-black/40 dark:text-white/40">Kreative Projekte in Vorbereitung...</p>
+        <p class="text-sm italic text-black/40 dark:text-white/40">Projets créatifs en cours de préparation...</p>
       )}
     </div>
   </Container>

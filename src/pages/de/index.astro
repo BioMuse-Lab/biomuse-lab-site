@@ -6,9 +6,27 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { SITE } from "@consts";
 
 const posts = (await getCollection("blog"))
-  .filter(post => !post.data.draft && post.data.lang === "de") // ✨ 核心：只抓取德文文章
+  .filter(post => !post.data.draft && post.data.lang === "de") 
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+
+// 🇩🇪 Deutsche Homepage: Intelligente Filterung durch verschachtelte Ordner
+const allProjects = await getCollection("projects") || [];
+const projects = allProjects
+  .filter(project => {
+    if (!project || !project.id || !project.data) return false;
+    
+    // 💡 Filter-Logik: Akzeptiert Dateien mit 'de'-Tag im Frontmatter oder '-de' im Dateinamen/Pfad
+    const idLower = String(project.id).toLowerCase();
+    const hasDeLabel = project.data.lang === "de" || idLower.includes("-de");
+    
+    return hasDeLabel;
+  })
+  .sort((a, b) => {
+    if (!a.data.date || !b.data.date) return 0;
+    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+  })
+  .slice(0, 2); // Begrenzung auf maximal 2 für das saubere Grid-Layout
 ---
 
 <PageLayout title="BioMuse Lab | DE" description="Digitale Festung einer Frau ohne feste Form">
@@ -58,6 +76,34 @@ const posts = (await getCollection("blog"))
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* 🎨 Integrierte Sektion für "Inspirierte Werke" auf Deutsch */}
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 justify-between items-center">
+          <h5 class="font-semibold text-black dark:text-white">Inspirierte Werke</h5>
+          <a href="/de/projects" class="text-sm border-b border-black/20 dark:border-white/20">Alle ansehen</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {projects.length > 0 ? (
+            projects.map(project => {
+              // 💡 Bereinigung des Slugs für das korrekte Routing in Astro (entfernt Sprach-Endungen im Pfad)
+              const cleanSlug = project.slug.replace(/-de$/, "").replace(/\/wenyan$/, "/wenyan");
+              return (
+                <a href={`/de/projects/${cleanSlug}`} class="block border border-black/10 dark:border-white/10 p-4 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+                  <div class="font-semibold text-black dark:text-white">
+                    {project.data.title}
+                  </div>
+                  <div class="text-xs text-black/50 dark:text-white/40 italic mt-1 line-clamp-2">
+                    {project.data.description || "Klicken, um dieses Werk zu erkunden."}
+                  </div>
+                </a>
+              );
+            })
+          ) : (
+            <p class="text-sm italic text-black/40 dark:text-white/40">Kreative Projekte in Vorbereitung...</p>
+          )}
+        </div>
       </section>
 
       <section class="animate space-y-6">

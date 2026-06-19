@@ -16,11 +16,11 @@ const projects = allProjects
   .filter(project => {
     if (!project || !project.id || !project.data) return false;
     
-    // 💡 穿透判断：只要文件名或路径里包含 -en 或 en 标签，直接判定为英文资产
+    // 💡 穿透判断：只要物理路径包含 -en 或 Frontmatter 标签声明为 en，一律安全放行
     const idLower = String(project.id).toLowerCase();
     const hasEnLabel = project.data.lang === "en" || idLower.includes("-en");
     
-    return tyrannicalFilter && hasEnLabel;
+    return hasEnLabel;
   })
   .sort((a, b) => {
     if (!a.data.date || !b.data.date) return 0;

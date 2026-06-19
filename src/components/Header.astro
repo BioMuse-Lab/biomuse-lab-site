@@ -20,20 +20,20 @@ if (['en', 'de', 'fr'].includes(segments[0])) {
 // 确保 pureRoute 不会变成 'projects/'，保持干净的字符内核
 pureRoute = pureRoute.replace(/\/$/, '');
 
-// 4. ✨ 核心修正：动态计算语言切换路径（强制补齐末尾斜杠防止 404）
+// 4. ✨ 终极修正：动态计算语言切换路径（彻底剔除末尾多余斜杠，精准对接物理根路由）
 function getLocalizedPath(targetLang: string) {
   if (targetLang === 'cn') {
-    return pureRoute ? `/${pureRoute}/` : '/';
+    return pureRoute ? `/${pureRoute}` : '/';
   }
-  return pureRoute ? `/${targetLang}/${pureRoute}/` : `/${targetLang}/`;
+  return pureRoute ? `/${targetLang}/${pureRoute}` : `/${targetLang}`;
 }
 
-// 5. ✨ 核心修正：动态计算菜单栏目路径（强制补齐末尾斜杠）
+// 5. ✨ 终极修正：动态计算菜单栏目路径（彻底剔除末尾斜杠，防止404和路由死锁）
 function getMenuPath(menu: string) {
   if (currentLang === 'cn') {
-    return `/${menu}/`;
+    return `/${menu}`;
   }
-  return `/${currentLang}/${menu}/`;
+  return `/${currentLang}/${menu}`;
 }
 
 // 根据语言定义导航文字

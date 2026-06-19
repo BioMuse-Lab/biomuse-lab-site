@@ -6,12 +6,30 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { SITE } from "@consts";
 
 const posts = (await getCollection("blog"))
-  .filter(post => !post.data.draft && post.data.lang === "fr") // ✨ 核心：只抓取法语文章
+  .filter(post => !post.data.draft && post.data.lang === "fr") // 🇫🇷 Filtrer uniquement les articles en français
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+
+// 🇫🇷 Page d'accueil en français : Filtrage intelligent à travers les sous-dossiers
+const allProjects = await getCollection("projects") || [];
+const projects = allProjects
+  .filter(project => {
+    if (!project || !project.id || !project.data) return false;
+    
+    // 💡 Logique de filtrage : Accepter si lang est "fr" ou si le chemin contient "-fr"
+    const idLower = String(project.id).toLowerCase();
+    const hasFrLabel = project.data.lang === "fr" || idLower.includes("-fr");
+    
+    return hasFrLabel;
+  })
+  .sort((a, b) => {
+    if (!a.data.date || !b.data.date) return 0;
+    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+  })
+  .slice(0, 2); // Limiter à 2 pour conserver la mise en page en grille (Grid)
 ---
 
-<PageLayout title="BioMuse Lab | FR" description="Forteresse numérique d'une femme sans forme">
+<PageLayout title="BioMuse Lab | FR" description="Forteresse Digitale d'une Femme sans Forme">
   <Container>
     <div class="space-y-16">
       
@@ -21,17 +39,17 @@ const posts = (await getCollection("blog"))
             Juste ici, telle que je suis 👋🏻
           </h4>
           <p class="animate">
-            Une femme sans forme, explorant actuellement au sein d'une entreprise de biotechnologie à Shanghai.
+            Une femme sans forme, explorant actuellement l'univers d'une entreprise de biotechnologie à Shanghai.
           </p>
           <p class="animate">
-            Considérer l'ensemble du parcours de vie comme une œuvre créative, en maintenant un état de flux continu. Écrire ce qui est scriptible, rester sincère et authentique dans les podcasts, et documenter les réflexions professionnelles et les méthodologies de recherche en sciences de la vie.
+            Envisager l'ensemble du parcours de vie comme une œuvre créative, maintenant un état de flux continu. Écrire ce qui est écrit, être sincère et authentique dans les podcasts, et documenter les perspectives professionnelles ainsi que les méthodologies de recherche dans le domaine des sciences de la vie.
           </p>
           <p class="animate">
-            Construire un « Laboratoire de Résonance » reliant la <strong>« Création Emotionnelle »</strong> à la <strong>« Expérimentation Rationnelle. »</strong>
+            Construire un « Laboratoire de Résonance » qui relie la <strong>« Création Émotionnelle »</strong> à l'<strong>« Expérimentation Rationnelle »</strong>.
           </p>
           <p class="animate border-l-2 border-black/10 dark:border-white/10 pl-4 italic">
-            « Tout passe à travers moi, je le rassemble dans mon vaisseau. » <br/>
-            L'écriture, la recherche et l'art sont des formes d'expression interconnectées — les traces continues de la vie coulant dans ce vaisseau.
+            « Tout passe à travers moi, je le rassemble dans mon récipient. » <br/>
+            L'écriture, la recherche et l'art sont des formes d'expression interconnectées — les traces continuelles de la vie qui coule dans ce récipient.
           </p>
         </article>
       </section>
@@ -42,12 +60,12 @@ const posts = (await getCollection("blog"))
             Articles Récents
           </h5>
           <a href="/fr/blog" class="whitespace-nowrap py-1 px-3 rounded-full border border-black/10 dark:border-white/25 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-xs">
-            Tout voir
+            Voir tout
           </a>
         </div>
         
         <p class="text-[11px] italic text-black/40 dark:text-white/40 -mt-3 tracking-wide">
-          Note : Les traductions peuvent légèrement différer de l'original chinois. 
+          Note : Les traductions peuvent légèrement varier par rapport à l'original chinois. 
           Pour une expérience plus authentique, la version originale est recommandée.
         </p>
 
@@ -60,18 +78,46 @@ const posts = (await getCollection("blog"))
         </ul>
       </section>
 
+      {/* 🎨 Section intégrée pour les "Œuvres Inspirées" en français */}
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 justify-between items-center">
+          <h5 class="font-semibold text-black dark:text-white">Œuvres Inspirées</h5>
+          <a href="/fr/projects" class="text-sm border-b border-black/20 dark:border-white/20">Voir tout</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {projects.length > 0 ? (
+            projects.map(project => {
+              // 💡 Nettoyage du slug pour un routage parfait dans Astro
+              const cleanSlug = project.slug.replace(/-fr$/, "").replace(/\/wenyan$/, "/wenyan");
+              return (
+                <a href={`/fr/projects/${cleanSlug}`} class="block border border-black/10 dark:border-white/10 p-4 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+                  <div class="font-semibold text-black dark:text-white">
+                    {project.data.title}
+                  </div>
+                  <div class="text-xs text-black/50 dark:text-white/40 italic mt-1 line-clamp-2">
+                    {project.data.description || "Cliquez pour explorer cette création."}
+                  </div>
+                </a>
+              );
+            })
+          ) : (
+            <p class="text-sm italic text-black/40 dark:text-white/40">Projets créatifs en cours...</p>
+          )}
+        </div>
+      </section>
+
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 justify-between items-center border-b border-black/5 pb-2">
-          <h5 class="font-semibold text-black dark:text-white">Trajectoires de vie & Expérimentations</h5>
+          <h5 class="font-semibold text-black dark:text-white">Parcours & Expériences</h5>
         </div>
         
         <div class="space-y-10">
           <div>
-            <div class="text-xs text-black/50 dark:text-white/50">Juil 2024 - Mar 2026</div>
+            <div class="text-xs text-black/50 dark:text-white/50">Juil 2024 - Mars 2026</div>
             <div class="font-semibold text-sm text-black dark:text-white">Bioligo (Shanghai)</div>
             <div class="text-xs italic mb-2">Ventes Scientifiques</div>
             <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
-              Faire le pont entre la recherche académique et l'industrie. Focus sur les technologies des acides nucléiques et la thérapie cellulaire CAR-T.
+              Lien entre recherche et industrie ; focus sur les CAR-T et la technologie des acides nucléiques.
             </p>
           </div>
 
@@ -80,25 +126,25 @@ const posts = (await getCollection("blog"))
             <div class="font-semibold text-sm text-black dark:text-white">Starbucks</div>
             <div class="text-xs italic mb-2">Barista</div>
             <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
-              Observer le flux incessant de l'humanité au milieu du quotidien — une pratique spirituelle dans les tâches ordinaires.
+              Observation du flux humain au quotidien — une pratique spirituelle au milieu des tâches ordinaires.
             </p>
           </div>
 
           <div>
             <div class="text-xs text-black/50 dark:text-white/50">Juin 2025 - Juin 2025</div>
-            <div class="font-semibold text-sm text-black dark:text-white">Entreprise MCN Media</div>
+            <div class="font-semibold text-sm text-black dark:text-white">Entreprise de Médias MCN</div>
             <div class="text-xs italic mb-2">Livestreamer</div>
             <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
-              Témoigner de la fabrication des « influenceurs » et explorer la machinerie derrière l'identité numérique.
+              Témoin de la fabrication des « influenceurs » et exploration de la machinerie derrière l'identité numérique.
             </p>
           </div>
 
           <div>
-            <div class="text-xs text-black/50 dark:text-white/50">Sep 2021 - Juil 2024</div>
+            <div class="text-xs text-black/50 dark:text-white/50">Sept 2021 - Juil 2024</div>
             <div class="font-semibold text-sm text-black dark:text-white">ECUST (Pharmacie)</div>
             <div class="text-xs italic mb-2">Étudiante en Master</div>
             <p class="text-sm text-black/70 dark:text-white/70 leading-relaxed">
-              Recherche sur l'intégration de la thérapie CAR-T et des puces microfluidiques. Une étape d'affirmation de soi face aux structures systémiques.
+              Recherche sur l'intégration de la thérapie CAR-T et des puces microfluidiques. Une phase d'affirmation de soi face aux structures systémiques.
             </p>
           </div>
         </div>

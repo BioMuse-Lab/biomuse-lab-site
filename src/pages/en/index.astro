@@ -10,13 +10,17 @@ const posts = (await getCollection("blog"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
-// 🇬🇧 英文主页：清洗捞取，并物理对齐路由
+// 🇬🇧 英文主页：完美穿透子文件夹的智能过滤
 const allProjects = await getCollection("projects") || [];
 const projects = allProjects
   .filter(project => {
     if (!project || !project.id || !project.data) return false;
-    // 确保只放行英文资产
-    return String(project.id).toLowerCase().endsWith("-en");
+    
+    // 💡 穿透判断：只要文件名或路径里包含 -en 或 en 标签，直接判定为英文资产
+    const idLower = String(project.id).toLowerCase();
+    const hasEnLabel = project.data.lang === "en" || idLower.includes("-en");
+    
+    return tyrannicalFilter && hasEnLabel;
   })
   .sort((a, b) => {
     if (!a.data.date || !b.data.date) return 0;
@@ -131,8 +135,8 @@ const projects = allProjects
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {projects.length > 0 ? (
             projects.map(project => {
-              // 💡 核心破局点：动态剥离物理文件后缀，生成对齐 Astro 多语言机制的干净路由
-              const cleanSlug = project.slug.replace(/-en$/, "");
+              // 💡 核心对齐：剥离路径中可能存在的语种后缀，确保完美对齐 Astro 的多语言本地路由
+              const cleanSlug = project.slug.replace(/-en$/, "").replace(/\/wenyan$/, "/wenyan");
               return (
                 <a href={`/en/projects/${cleanSlug}`} class="block border border-black/10 dark:border-white/10 p-4 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
                   <div class="font-semibold text-black dark:text-white">
